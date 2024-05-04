@@ -20,7 +20,7 @@ export default function Scanner() {
   const [newQty, setNewQty] = useState(0);
   // const [DNc_No, setDNc_No] = useState(0);
 
-  const url = "http://localhost:3000";
+  const url = "https://npqfnjnh-3000.asse.devtunnels.ms/";
   const navigate = useNavigate();
 
   console.log(`${url}/products/${scanned}`);
