@@ -198,7 +198,9 @@ export default function Scanner() {
               {openQr ? "Close" : "Open"} Scan QR
             </button>
           </div>
-          <ToastContainer />
+          <ToastContainer 
+          position="bottom-right"
+          draggable/>
           {openQr && <QrScanner setScanned={setScanned} />}
           {openQrRack && <QrScannerRack setScannedRack={setScannedRack} />}
         </div>
