@@ -69,8 +69,10 @@ export default function Scanner() {
         );
 
         Swal.fire({
-          title: "Success updated",
+          title: "Success Updated Product",
           icon: "success",
+          showConfirmButton: false,
+          timer: 1000,
         });
         navigate("/");
       } else if (rack.length === 0) {
@@ -87,8 +89,10 @@ export default function Scanner() {
         );
 
         Swal.fire({
-          title: "Success added",
+          title: "Success Added Product to Rack",
           icon: "success",
+          showConfirmButton: false,
+          timer: 1000,
         });
         navigate("/");
       }
