@@ -30,6 +30,12 @@ export default function Scanner() {
     try {
       const { data } = await axios.get(`${url}/products/${scanned}`);
       console.log(data, "ini data fetchProduct");
+      if (data.length === 0) {
+        Swal.fire({
+          title: "Product Not Found",
+          icon: "error",
+        });
+      }
       setProduct(data);
       // console.log(product);
     } catch (error) {
