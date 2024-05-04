@@ -1,10 +1,11 @@
 import QrScanner from "../components/QrScanner";
 import QrScannerRack from "../components/QrScannerRack";
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Scanner() {
   const [openQr, setOpenQr] = useState(true);
@@ -14,59 +15,66 @@ export default function Scanner() {
   const [scannedRack, setScannedRack] = useState(undefined);
 
   const [product, setProduct] = useState([]);
-  // const [productName, setProductName] = useState(undefined);
   const [rack, setRack] = useState([]);
 
   const [newQty, setNewQty] = useState(0);
-  // const [DNc_No, setDNc_No] = useState(0);
 
   const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
   const navigate = useNavigate();
 
-  console.log(`${url}/products/${scanned}`);
-  console.log(`${url}/racks/${scannedRack}/${product[0]?.item_name}`);
+  // console.log(`${url}/products/${scanned}`);
+  // console.log(`${url}/racks/${scannedRack}/${product[0]?.item_name}`);
 
   async function fetchProduct() {
+    const loadingToastId = toast.info("Fetching product data...", {
+      autoClose: false,
+    });
     try {
       const { data } = await axios.get(`${url}/products/${scanned}`);
       console.log(data, "ini data fetchProduct");
       if (data.length === 0) {
-        Swal.fire({
-          title: "Product Not Found",
-          icon: "error",
-        });
+        toast.error("Product Not Found");
       }
       setProduct(data);
+      toast.success("Product data fetched successfully");
       // console.log(product);
     } catch (error) {
       console.log(error);
-      Swal.fire({
-        title: error?.response.data.error,
-        icon: "error",
-      });
+      toast.error(
+        error?.response?.data?.error ||
+          "An error occurred while fetching product data"
+      );
+    } finally {
+      toast.dismiss(loadingToastId);
     }
   }
 
   async function fetchRack() {
+    const loadingToastId = toast.info("Fetching product data...", {
+      autoClose: false,
+    });
     try {
       const { data } = await axios.get(
         `${url}/racks/${scannedRack}/${product[0]?.item_name}`
       );
-
       setRack(data);
+      toast.success("Rack data fetched successfully");
+
       // console.log(rack);
     } catch (error) {
       console.log(error);
-      Swal.fire({
-        title: error?.response,
-        icon: "error",
-      });
+      toast.error(
+        error?.response?.data?.error ||
+          "Rak ini kosong"
+      );
+    } finally {
+      toast.dismiss(loadingToastId);
     }
   }
 
   const handleUpdate = async (e, newQty) => {
     e.preventDefault();
-    console.log(rack, "ini rack");
+    // console.log(rack, "ini rack");
     try {
       if (rack.length > 0) {
         const response = await axios.patch(
@@ -105,7 +113,7 @@ export default function Scanner() {
     } catch (error) {
       console.log(error);
       Swal.fire({
-        title: 'Not Found',
+        title: "Not Found",
         icon: "error",
       });
     }
@@ -175,7 +183,7 @@ export default function Scanner() {
   // console.log(newQty, "ini newQty");
   // console.log(productName);
   // console.log(product[0]?.item_name);
-  console.log(rack);
+  // console.log(rack);
 
   return (
     <>
@@ -190,6 +198,7 @@ export default function Scanner() {
               {openQr ? "Close" : "Open"} Scan QR
             </button>
           </div>
+          <ToastContainer />
           {openQr && <QrScanner setScanned={setScanned} />}
           {openQrRack && <QrScannerRack setScannedRack={setScannedRack} />}
         </div>
@@ -270,11 +279,9 @@ export default function Scanner() {
               </div>
             </>
           )}
-
         </div>
         <div className="flex justify-end m-5">
-
-        {scanned && (
+          {scanned && (
             <button
               className="btn btn-sm btn-warning "
               onClick={() => setOpenQrRack(!openQrRack)}
@@ -285,8 +292,7 @@ export default function Scanner() {
         </div>
 
         {/* {rack.length > 0 ? ( */}
-          {scannedRack && rack.length !== 0 && (
-
+        {scannedRack && rack.length !== 0 && (
           <>
             <div>
               <table className="table">
@@ -329,7 +335,7 @@ export default function Scanner() {
                   name="newQty"
                   type="number"
                   // value={product[0]?.ttba_qty}
-                  value={newQty || ""}
+                  // value={newQty || 0}
                   onChange={(e) => setNewQty(e.target.value)}
                 />
                 <button
@@ -341,9 +347,9 @@ export default function Scanner() {
               </form>
             </div>
           </>
-          )}
-          {scannedRack && rack.length === 0 && (
-            <>
+        )}
+        {scannedRack && rack.length === 0 && (
+          <>
             <div>
               <div
                 className="bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md m-5"
@@ -389,8 +395,7 @@ export default function Scanner() {
               </form>
             </div>
           </>
-          
-          )}
+        )}
 
         {/* ) : (
           <>
@@ -440,7 +445,6 @@ export default function Scanner() {
             </div>
           </>
         )} */}
-        
       </div>
 
       {/* <div>
@@ -449,6 +453,5 @@ export default function Scanner() {
         </button>
       </div> */}
     </>
-    
   );
 }
