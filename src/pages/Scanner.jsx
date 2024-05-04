@@ -337,7 +337,7 @@ export default function Scanner() {
                   name="newQty"
                   type="number"
                   // value={product[0]?.ttba_qty}
-                  // value={newQty || 0}
+                  value={newQty || 0}
                   onChange={(e) => setNewQty(e.target.value)}
                 />
                 <button
