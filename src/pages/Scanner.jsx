@@ -189,7 +189,7 @@ export default function Scanner() {
     <>
       <div className="mt-8 h-screen ">
         <div className="px-5 py-3">
-          <div className="flex justify-between mt-2">
+          <div className="flex justify-between mt-2 mb-4">
             <h3>Pemetaan Barang</h3>
             <button
               className="btn btn-sm btn-success"
@@ -282,7 +282,7 @@ export default function Scanner() {
             </>
           )}
         </div>
-        <div className="flex justify-end m-5">
+        <div className="flex justify-center m-5">
           {scanned && (
             <button
               className="btn btn-sm btn-warning "
