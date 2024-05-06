@@ -163,7 +163,7 @@ export default function Scanner() {
       setOpenQr(false);
       // console.log(product, '1234'); kalo ini undefined, harus buat useEffect lagi yang ngewatch product
       // setNewQty(product[0]?.ttba_qty);
-      // fetch();
+      // fetch();jksbdabjbwajsajnkjdnsndnjknda
     }
   }, [scanned]);
 
@@ -244,7 +244,7 @@ export default function Scanner() {
                     </tr>
                     <tr>
                       <th>Tgl. Terima</th>
-                      <td>{item?.ttba_date}</td>
+                      <td>{((item?.ttba_date).replace("T", " ").replace("Z", ""))}</td>
                     </tr>
                     <tr>
                       <th>tgl. Daluarsa</th>
