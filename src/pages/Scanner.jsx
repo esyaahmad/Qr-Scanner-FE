@@ -18,12 +18,15 @@ export default function Scanner() {
   const [rack, setRack] = useState([]);
 
   const [newQty, setNewQty] = useState(0);
+  const [maxQty, setMaxQty] = useState(0);
+
 
   const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
   const navigate = useNavigate();
 
   // console.log(`${url}/products/${scanned}`);
   // console.log(`${url}/racks/${scannedRack}/${product[0]?.item_name}`);
+  console.log(`${url}/racks/${scannedRack}/${((product[0]?.ttba_itemid)?.replace(/\s/g, '_'))}/${((product[0]?.No_analisa)?.replace(/\//g, '-'))}`);
 
   async function fetchProduct() {
     const loadingToastId = toast.info("Fetching product data...", {
@@ -55,7 +58,7 @@ export default function Scanner() {
     });
     try {
       const { data } = await axios.get(
-        `${url}/racks/${scannedRack}/${product[0]?.item_name}`
+        `${url}/racks/${scannedRack}/${((product[0]?.ttba_itemid)?.replace(/\s/g, '_'))}/${((product[0]?.No_analisa)?.replace(/\//g, '-'))}`
       );
       setRack(data);
       toast.success("Rack data fetched successfully");
@@ -75,10 +78,16 @@ export default function Scanner() {
   const handleUpdate = async (e, newQty) => {
     e.preventDefault();
     // console.log(rack, "ini rack");
+      //   // Check if the rack array is empty or doesn't contain necessary data
+      //   if (rack.length === 0 || !scannedRack || !product[0]?.ttba_itemid || !product[0]?.No_analisa) {
+      //     // Display an error message or handle the validation failure appropriately
+      //     console.error('Invalid rack data or missing required information.');
+      //     return;
+      // }
     try {
       if (rack.length > 0) {
         const response = await axios.patch(
-          `${url}/racks/${scannedRack}/${product[0]?.item_name}`,
+          `${url}/racks/${scannedRack}/${((product[0]?.ttba_itemid)?.replace(/\s/g, '_'))}/${((product[0]?.No_analisa)?.replace(/\//g, '-'))}`,
           { newQty }
         );
 
@@ -88,17 +97,19 @@ export default function Scanner() {
           showConfirmButton: false,
           timer: 1000,
         });
-        navigate("/");
+        
+        navigate("/scanner");
       } else if (rack.length === 0) {
         const body = {
           newQty,
-          DNc_No: product[0]?.No_analisa,
-          Item_ID: product[0]?.ttba_itemid,
+          // DNc_No: product[0]?.No_analisa,
+          // Item_ID: product[0]?.ttba_itemid,
           Process_Date: product[0]?.ttba_date,
+          Item_Name: ((product[0]?.item_name).replace(/_/g, ' ')),
         };
 
         const response = await axios.post(
-          `${url}/racks/${scannedRack}/${product[0]?.item_name}`,
+          `${url}/racks/${scannedRack}/${((product[0]?.ttba_itemid)?.replace(/\s/g, '_'))}/${((product[0]?.No_analisa)?.replace(/\//g, '-'))}`,
           body
         );
 
@@ -169,6 +180,7 @@ export default function Scanner() {
 
   useEffect(() => {
     setNewQty(product[0]?.ttba_qty);
+    setMaxQty(product[0]?.ttba_qty);
     // console.log(product, '1234');
   }, [product]);
 
@@ -180,7 +192,8 @@ export default function Scanner() {
   }, [scannedRack]);
 
   // console.log(product, 'ini product');
-  // console.log(newQty, "ini newQty");
+  console.log(newQty, "ini newQty");
+  console.log(maxQty, "ini maxQty");
   // console.log(productName);
   // console.log(product[0]?.item_name);
   // console.log(rack);
@@ -336,8 +349,9 @@ export default function Scanner() {
                   id="newQty"
                   name="newQty"
                   type="number"
-                  // value={product[0]?.ttba_qty}
-                  value={newQty || 0}
+                  // value={newQty || 0}
+                  max={+maxQty}
+                  min={1}
                   onChange={(e) => setNewQty(e.target.value)}
                 />
                 <button
