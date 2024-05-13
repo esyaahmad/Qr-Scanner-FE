@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+//handleupdate udah bener, tinggal create
 export default function Scanner() {
   const [openQr, setOpenQr] = useState(true);
   const [openQrRack, setOpenQrRack] = useState(false);
@@ -20,13 +21,17 @@ export default function Scanner() {
   const [newQty, setNewQty] = useState(0);
   const [maxQty, setMaxQty] = useState(0);
 
-
   const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
   const navigate = useNavigate();
 
   // console.log(`${url}/products/${scanned}`);
   // console.log(`${url}/racks/${scannedRack}/${product[0]?.item_name}`);
-  console.log(`${url}/racks/${scannedRack}/${((product[0]?.ttba_itemid)?.replace(/\s/g, '_'))}/${((product[0]?.No_analisa)?.replace(/\//g, '-'))}`);
+  console.log(
+    `${url}/racks/${scannedRack}/${product[0]?.ttba_itemid?.replace(
+      /\s/g,
+      "_"
+    )}/${product[0]?.No_analisa?.replace(/\//g, "-")}`
+  );
 
   async function fetchProduct() {
     const loadingToastId = toast.info("Fetching product data...", {
@@ -58,7 +63,10 @@ export default function Scanner() {
     });
     try {
       const { data } = await axios.get(
-        `${url}/racks/${scannedRack}/${((product[0]?.ttba_itemid)?.replace(/\s/g, '_'))}/${((product[0]?.No_analisa)?.replace(/\//g, '-'))}`
+        `${url}/racks/${scannedRack}/${product[0]?.ttba_itemid?.replace(
+          /\s/g,
+          "_"
+        )}/${product[0]?.No_analisa?.replace(/\//g, "-")}`
       );
       setRack(data);
       toast.success("Rack data fetched successfully");
@@ -66,28 +74,102 @@ export default function Scanner() {
       // console.log(rack);
     } catch (error) {
       console.log(error);
-      toast.error(
-        error?.response?.data?.error ||
-          "Rak ini kosong"
-      );
+      toast.error(error?.response?.data?.error || "Rak ini kosong");
     } finally {
       toast.dismiss(loadingToastId);
     }
   }
 
-  const handleUpdate = async (e, newQty) => {
+  // const handleUpdate = async (e, newQty) => {
+  //   e.preventDefault();
+  //   // console.log(rack, "ini rack");
+  //   //   // Check if the rack array is empty or doesn't contain necessary data
+  //   //   if (rack.length === 0 || !scannedRack || !product[0]?.ttba_itemid || !product[0]?.No_analisa) {
+  //   //     // Display an error message or handle the validation failure appropriately
+  //   //     console.error('Invalid rack data or missing required information.');
+  //   //     return;
+  //   // }
+  //   try {
+  //     if (rack.length > 0) {
+  //       const response = await axios.patch(
+  //         `${url}/racks/${scannedRack}/${product[0]?.ttba_itemid?.replace(
+  //           /\s/g,
+  //           "_"
+  //         )}/${product[0]?.No_analisa?.replace(/\//g, "-")}`,
+  //         { newQty }
+  //       );
+
+  //       Swal.fire({
+  //         title: "Success Updated Product",
+  //         icon: "success",
+  //         showConfirmButton: false,
+  //         timer: 1000,
+  //       });
+
+  //       navigate("/scanner");
+  //     } else if (rack.length === 0) {
+  //       const body = {
+  //         newQty,
+  //         // DNc_No: product[0]?.No_analisa,
+  //         // Item_ID: product[0]?.ttba_itemid,
+  //         Process_Date: product[0]?.ttba_date,
+  //         Item_Name: (product[0]?.item_name).replace(/_/g, " "),
+  //       };
+
+  //       const response = await axios.post(
+  //         `${url}/racks/${scannedRack}/${product[0]?.ttba_itemid?.replace(
+  //           /\s/g,
+  //           "_"
+  //         )}/${product[0]?.No_analisa?.replace(/\//g, "-")}`,
+  //         body
+  //       );
+
+  //       Swal.fire({
+  //         title: "Success Added Product to Rack",
+  //         icon: "success",
+  //         showConfirmButton: false,
+  //         timer: 1000,
+  //       });
+  //       navigate("/");
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     Swal.fire({
+  //       title: "Not Found",
+  //       icon: "error",
+  //     });
+  //   }
+  // };
+
+  const handleSubmit =  (e) => {
+    // if (newQty <= maxQty) {
+    //   setMaxQty(maxQty - newQty);
+    //   handleUpdate(e);
+    // } else {
+    //   alert("New quantity cannot exceed maximum quantity.");
+    // }
+
+    if (rack.length === 0) {
+       handleCreate(e);
+    } else {
+      if (newQty <= maxQty) {
+        setMaxQty(maxQty - newQty);
+        handleUpdate(e);
+      } else {
+        alert("New quantity cannot exceed maximum quantity.");
+      }
+    }
+
+    
+
+  };
+
+  const handleUpdate = async (e) => {
     e.preventDefault();
-    // console.log(rack, "ini rack");
-      //   // Check if the rack array is empty or doesn't contain necessary data
-      //   if (rack.length === 0 || !scannedRack || !product[0]?.ttba_itemid || !product[0]?.No_analisa) {
-      //     // Display an error message or handle the validation failure appropriately
-      //     console.error('Invalid rack data or missing required information.');
-      //     return;
-      // }
     try {
       if (rack.length > 0) {
         const response = await axios.patch(
-          `${url}/racks/${scannedRack}/${((product[0]?.ttba_itemid)?.replace(/\s/g, '_'))}/${((product[0]?.No_analisa)?.replace(/\//g, '-'))}`,
+          `${url}/racks/${scannedRack}/${product[0]?.ttba_itemid?.replace(/\s/g, "_")}/${product[0]?.No_analisa?.replace(/\//g, "-")}`,
           { newQty }
         );
 
@@ -97,68 +179,46 @@ export default function Scanner() {
           showConfirmButton: false,
           timer: 1000,
         });
-        
+        if (maxQty - newQty === 0) {
+          navigate('/');
+        } else {
         navigate("/scanner");
-      } else if (rack.length === 0) {
-        const body = {
-          newQty,
-          // DNc_No: product[0]?.No_analisa,
-          // Item_ID: product[0]?.ttba_itemid,
-          Process_Date: product[0]?.ttba_date,
-          Item_Name: ((product[0]?.item_name).replace(/_/g, ' ')),
-        };
-
-        const response = await axios.post(
-          `${url}/racks/${scannedRack}/${((product[0]?.ttba_itemid)?.replace(/\s/g, '_'))}/${((product[0]?.No_analisa)?.replace(/\//g, '-'))}`,
-          body
-        );
-
-        Swal.fire({
-          title: "Success Added Product to Rack",
-          icon: "success",
-          showConfirmButton: false,
-          timer: 1000,
-        });
-        navigate("/");
+        }
       }
     } catch (error) {
-      console.log(error);
-      Swal.fire({
-        title: "Not Found",
-        icon: "error",
-      });
+      console.error("Error updating product:", error);
+      // Handle error - display an error message or take appropriate action
     }
   };
 
-  // const handleUpdate = async (e, newQty) => {
-  //   e.preventDefault();
-  //   try {
-  //     const body = {
-  //       newQty,
-  //       DNc_No: product[0]?.No_analisa,
-  //       Item_ID: product[0]?.ttba_itemid,
-  //       Process_Date: product[0]?.ttba_date,
-  //     };
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    try {
+      const body = {
+        newQty,
+        Process_Date: product[0]?.ttba_date,
+        Item_Name: (product[0]?.item_name).replace(/_/g, " "),
+      };
 
-  //     const response = await axios.post(
-  //       `${url}/racks/${scannedRack}/${product[0]?.item_name}`,
-  //       body
-  //     );
+      const response = await axios.post(
+        `${url}/racks/${scannedRack}/${product[0]?.ttba_itemid?.replace(/\s/g, "_")}/${product[0]?.No_analisa?.replace(/\//g, "-")}`,
+        body
+      );
 
-  //     Swal.fire({
-  //       title: "Success added",
-  //       icon: "success",
-  //     });
-  //     navigate("/");
+      Swal.fire({
+        title: "Success Added Product to Rack",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 1000,
+      });
 
-  //   } catch (error) {
-  //     console.log(error);
-  //     Swal.fire({
-  //       title: error.response,
-  //       icon: "error",
-  //     });
-  //   }
-  // };
+      navigate("/");
+    } catch (error) {
+      console.error("Error adding product to rack:", error);
+      // Handle error - display an error message or take appropriate action
+    }
+  };
+
 
   useEffect(() => {
     // async function fetch(){
@@ -203,7 +263,7 @@ export default function Scanner() {
       <div className="mt-8 h-screen ">
         <div className="px-5 py-3">
           <div className="flex justify-between mt-2 mb-4">
-            <h3>Pemetaan Barang</h3>
+            <h3>Input Product Location</h3>
             <button
               className="btn btn-sm btn-success"
               onClick={() => setOpenQr(!openQr)}
@@ -211,9 +271,7 @@ export default function Scanner() {
               {openQr ? "Close" : "Open"} Scan QR
             </button>
           </div>
-          <ToastContainer 
-          position="bottom-right"
-          draggable/>
+          <ToastContainer position="bottom-right" draggable />
           {openQr && <QrScanner setScanned={setScanned} />}
           {openQrRack && <QrScannerRack setScannedRack={setScannedRack} />}
         </div>
@@ -257,7 +315,9 @@ export default function Scanner() {
                     </tr>
                     <tr>
                       <th>Tgl. Terima</th>
-                      <td>{((item?.ttba_date).replace("T", " ").replace("Z", ""))}</td>
+                      <td>
+                        {(item?.ttba_date).replace("T", " ").replace("Z", "")}
+                      </td>
                     </tr>
                     <tr>
                       <th>tgl. Daluarsa</th>
@@ -340,7 +400,22 @@ export default function Scanner() {
               </table>
             </div>
             <div className="m-4">
-              <form action="" onSubmit={(e) => handleUpdate(e, newQty)}>
+            <form action="" 
+            // onSubmit={(e) => handleUpdate(e, newQty)}
+            > 
+            {/* awalnya */}
+              {/* <form
+                action=""
+                onSubmit={(e) => {
+                  e.preventDefault(); // Prevent the default form submission behavior
+                  if (parseInt(newQty) <= parseInt(maxQty)) {
+                    setMaxQty(parseInt(maxQty) - parseInt(newQty)); // Update maxQty
+                    handleUpdate(e, newQty); // Call handleUpdate
+                  } else {
+                    alert("New quantity cannot exceed maximum quantity!");
+                  }
+                }}
+              > */}
                 <label className=" flex justify-center block text-gray-700 text-sm font-bold mb-2">
                   Update Jumlah
                 </label>
@@ -357,6 +432,7 @@ export default function Scanner() {
                 <button
                   className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline my-4"
                   type="submit"
+                  onClick={(e) => handleSubmit(e)}
                 >
                   Submit
                 </button>
@@ -389,7 +465,9 @@ export default function Scanner() {
               </div>
             </div>
             <div className="m-5">
-              <form action="" onSubmit={(e) => handleUpdate(e, newQty)}>
+              <form action="" 
+              // onSubmit={(e) => handleUpdate(e, newQty)}
+              >
                 <label className="block text-gray-700 text-sm font-bold mb-2 ">
                   Tambahkan Product
                 </label>
@@ -405,6 +483,8 @@ export default function Scanner() {
                 <button
                   className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline my-4"
                   type="submit"
+                  onClick={(e) => handleSubmit(e)}
+
                 >
                   Submit
                 </button>

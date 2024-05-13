@@ -3,6 +3,7 @@ import Login from "../pages/Login";
 import Parent from "../layout/Parent";
 import Home from "../pages/Home";
 import Scanner from "../pages/Scanner";
+import ScannerRack from "../pages/ScannerRack";
 
 
 const router = createBrowserRouter([
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
       {
         path: "scanner",
         element: <Scanner />,
+      },
+      {
+        path: "scannerRack",
+        element: <ScannerRack />,
       },
     ],
   },
