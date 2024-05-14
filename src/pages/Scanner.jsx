@@ -11,6 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 export default function Scanner() {
   const [openQr, setOpenQr] = useState(true);
   const [openQrRack, setOpenQrRack] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [scanned, setScanned] = useState(undefined);
   const [scannedRack, setScannedRack] = useState(undefined);
@@ -21,19 +22,22 @@ export default function Scanner() {
   const [newQty, setNewQty] = useState(0);
   const [maxQty, setMaxQty] = useState(0);
 
-  const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
+  // const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
+  const url = "http://localhost:3000";
+
   const navigate = useNavigate();
 
   // console.log(`${url}/products/${scanned}`);
   // console.log(`${url}/racks/${scannedRack}/${product[0]?.item_name}`);
-  console.log(
-    `${url}/racks/${scannedRack}/${product[0]?.ttba_itemid?.replace(
-      /\s/g,
-      "_"
-    )}/${product[0]?.No_analisa?.replace(/\//g, "-")}`
-  );
+  // console.log(
+  //   `${url}/racks/${scannedRack}/${product[0]?.ttba_itemid?.replace(
+  //     /\s/g,
+  //     "_"
+  //   )}/${product[0]?.No_analisa?.replace(/\//g, "-")}`
+  // );
 
   async function fetchProduct() {
+    setLoading(true);
     const loadingToastId = toast.info("Fetching product data...", {
       autoClose: false,
     });
@@ -42,158 +46,118 @@ export default function Scanner() {
       console.log(data, "ini data fetchProduct");
       if (data.length === 0) {
         toast.error("Product Not Found");
+      } else {
+        setProduct(data);
+        toast.success("Product data fetched successfully");
       }
-      setProduct(data);
-      toast.success("Product data fetched successfully");
       // console.log(product);
     } catch (error) {
       console.log(error);
-      toast.error(
-        error?.response?.data?.error ||
-          "An error occurred while fetching product data"
-      );
+      toast.error(error?.response?.data?.error || "Product tidak ditemukan");
+      setScanned(undefined);
+      setProduct([]);
     } finally {
       toast.dismiss(loadingToastId);
+      setLoading(false);
     }
   }
 
   async function fetchRack() {
+    setLoading(true);
     const loadingToastId = toast.info("Fetching product data...", {
       autoClose: false,
     });
+    const itemId = product[0]?.ttba_itemid?.replace(/\s/g, "_");
+    const noAnalisa = product[0]?.No_analisa?.replace(/\//g, "-");
     try {
       const { data } = await axios.get(
-        `${url}/racks/${scannedRack}/${product[0]?.ttba_itemid?.replace(
-          /\s/g,
-          "_"
-        )}/${product[0]?.No_analisa?.replace(/\//g, "-")}`
+        `${url}/racks/${scannedRack}/${itemId}/${noAnalisa}`
       );
-      setRack(data);
-      toast.success("Rack data fetched successfully");
+      if (data.length === 0) {
+        toast.error("Rack Not Found");
+      } else {
+
+        setRack(data);
+        toast.success("Rack data fetched successfully");
+      }
 
       // console.log(rack);
     } catch (error) {
       console.log(error);
-      toast.error(error?.response?.data?.error || "Rak ini kosong");
+      toast.error(error?.response?.data?.error || "Rak tidak ditemukan");
+      setScannedRack(undefined);
     } finally {
       toast.dismiss(loadingToastId);
+      setLoading(false);
     }
   }
 
-  // const handleUpdate = async (e, newQty) => {
-  //   e.preventDefault();
-  //   // console.log(rack, "ini rack");
-  //   //   // Check if the rack array is empty or doesn't contain necessary data
-  //   //   if (rack.length === 0 || !scannedRack || !product[0]?.ttba_itemid || !product[0]?.No_analisa) {
-  //   //     // Display an error message or handle the validation failure appropriately
-  //   //     console.error('Invalid rack data or missing required information.');
-  //   //     return;
-  //   // }
-  //   try {
-  //     if (rack.length > 0) {
-  //       const response = await axios.patch(
-  //         `${url}/racks/${scannedRack}/${product[0]?.ttba_itemid?.replace(
-  //           /\s/g,
-  //           "_"
-  //         )}/${product[0]?.No_analisa?.replace(/\//g, "-")}`,
-  //         { newQty }
-  //       );
-
-  //       Swal.fire({
-  //         title: "Success Updated Product",
-  //         icon: "success",
-  //         showConfirmButton: false,
-  //         timer: 1000,
-  //       });
-
-  //       navigate("/scanner");
-  //     } else if (rack.length === 0) {
-  //       const body = {
-  //         newQty,
-  //         // DNc_No: product[0]?.No_analisa,
-  //         // Item_ID: product[0]?.ttba_itemid,
-  //         Process_Date: product[0]?.ttba_date,
-  //         Item_Name: (product[0]?.item_name).replace(/_/g, " "),
-  //       };
-
-  //       const response = await axios.post(
-  //         `${url}/racks/${scannedRack}/${product[0]?.ttba_itemid?.replace(
-  //           /\s/g,
-  //           "_"
-  //         )}/${product[0]?.No_analisa?.replace(/\//g, "-")}`,
-  //         body
-  //       );
-
-  //       Swal.fire({
-  //         title: "Success Added Product to Rack",
-  //         icon: "success",
-  //         showConfirmButton: false,
-  //         timer: 1000,
-  //       });
-  //       navigate("/");
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     Swal.fire({
-  //       title: "Not Found",
-  //       icon: "error",
-  //     });
-  //   }
-  // };
-
-  const handleSubmit =  (e) => {
-    // if (newQty <= maxQty) {
-    //   setMaxQty(maxQty - newQty);
-    //   handleUpdate(e);
-    // } else {
-    //   alert("New quantity cannot exceed maximum quantity.");
-    // }
-
+  const handleSubmit = (e) => {
+    
     if (rack.length === 0) {
-       handleCreate(e);
+      handleCreate(e);
     } else {
       if (newQty <= maxQty) {
         setMaxQty(maxQty - newQty);
         handleUpdate(e);
+        
       } else {
         alert("New quantity cannot exceed maximum quantity.");
       }
     }
-
-    
-
   };
 
   const handleUpdate = async (e) => {
+    setLoading(true);
     e.preventDefault();
     try {
       if (rack.length > 0) {
+        if (newQty <= 0) {
+          throw new Error("Quantity must be greater than 0.");
+        }
         const response = await axios.patch(
-          `${url}/racks/${scannedRack}/${product[0]?.ttba_itemid?.replace(/\s/g, "_")}/${product[0]?.No_analisa?.replace(/\//g, "-")}`,
+          `${url}/racks/${scannedRack}/${product[0]?.ttba_itemid?.replace(
+            /\s/g,
+            "_"
+          )}/${product[0]?.No_analisa?.replace(/\//g, "-")}`,
           { newQty }
         );
 
-        Swal.fire({
-          title: "Success Updated Product",
-          icon: "success",
-          showConfirmButton: false,
-          timer: 1000,
-        });
         if (maxQty - newQty === 0) {
-          navigate('/');
+          navigate("/");
+          Swal.fire({
+            title: `Success Updated ${newQty} Product to ${scannedRack}`,
+            icon: "success",
+          });
         } else {
-        navigate("/scanner");
+          navigate("/scanner");
+          Swal.fire({
+            title: `Success Updated ${newQty} Product to ${scannedRack}`,
+            icon: "success",
+          });
         }
       }
     } catch (error) {
       console.error("Error updating product:", error);
-      // Handle error - display an error message or take appropriate action
+      if (error.response) {
+        toast.error(
+          "An error occurred while updating product. Please try again later."
+        );
+      } else {
+        toast.error(error.message || "An unexpected error occurred.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleCreate = async (e) => {
+    setLoading(true);
     e.preventDefault();
     try {
+      if (newQty <= 0) {
+        throw new Error("Quantity must be greater than 0.");
+      }
       const body = {
         newQty,
         Process_Date: product[0]?.ttba_date,
@@ -201,7 +165,10 @@ export default function Scanner() {
       };
 
       const response = await axios.post(
-        `${url}/racks/${scannedRack}/${product[0]?.ttba_itemid?.replace(/\s/g, "_")}/${product[0]?.No_analisa?.replace(/\//g, "-")}`,
+        `${url}/racks/${scannedRack}/${product[0]?.ttba_itemid?.replace(
+          /\s/g,
+          "_"
+        )}/${product[0]?.No_analisa?.replace(/\//g, "-")}`,
         body
       );
 
@@ -215,10 +182,18 @@ export default function Scanner() {
       navigate("/");
     } catch (error) {
       console.error("Error adding product to rack:", error);
-      // Handle error - display an error message or take appropriate action
+      if (error.response) {
+        toast.error(
+          "An error occurred while adding product to rack. Please try again later."
+        );
+      } else {
+        toast.error(error.message || "An unexpected error occurred.");
+      }
+      // setScannedRack(undefined)
+    } finally {
+      setLoading(false);
     }
   };
-
 
   useEffect(() => {
     // async function fetch(){
@@ -251,6 +226,21 @@ export default function Scanner() {
     }
   }, [scannedRack]);
 
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      if (maxQty > 0) {
+        event.preventDefault();
+        event.returnValue = ''; // This will display a default browser prompt
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [maxQty]);
+
   // console.log(product, 'ini product');
   console.log(newQty, "ini newQty");
   console.log(maxQty, "ini maxQty");
@@ -258,8 +248,28 @@ export default function Scanner() {
   // console.log(product[0]?.item_name);
   // console.log(rack);
 
+  // useEffect(() => {
+  //   if (scanned !== undefined) {
+  //     fetchProduct();
+  //     setOpenQr(false);
+  //   }
+  //   if (scannedRack !== undefined) {
+  //     fetchRack();
+  //     setOpenQrRack(false);
+  //   }
+  //   if (product.length > 0) {
+  //     setNewQty(product[0]?.ttba_qty);
+  //     setMaxQty(product[0]?.ttba_qty);
+  //   }
+  // }, [scanned, scannedRack, product.length, fetchProduct, fetchRack]);
+
   return (
     <>
+      {loading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 bg-opacity-50 backdrop-blur-lg">
+          <div className="bg-white p-5 rounded-lg shadow-lg">Loading...</div>
+        </div>
+      )}
       <div className="mt-8 h-screen ">
         <div className="px-5 py-3">
           <div className="flex justify-between mt-2 mb-4">
@@ -327,18 +337,6 @@ export default function Scanner() {
                       <th>Qty</th>
                       <td>{item?.ttba_qty}</td>
                     </tr>
-                    {/* <tr>
-                <th>No. Wadah</th>
-                <td>-</td>
-              </tr>
-              <tr>
-                <th>No. Analisa</th>
-                <td>-</td>
-              </tr>
-              <tr>
-                <th>Operator</th>
-                <td>-</td>
-              </tr> */}
                   </>
                 ))}
               </tbody>
@@ -366,7 +364,6 @@ export default function Scanner() {
           )}
         </div>
 
-        {/* {rack.length > 0 ? ( */}
         {scannedRack && rack.length !== 0 && (
           <>
             <div>
@@ -400,11 +397,12 @@ export default function Scanner() {
               </table>
             </div>
             <div className="m-4">
-            <form action="" 
-            // onSubmit={(e) => handleUpdate(e, newQty)}
-            > 
-            {/* awalnya */}
-              {/* <form
+              <form
+                action=""
+                // onSubmit={(e) => handleUpdate(e, newQty)}
+              >
+                {/* awalnya */}
+                {/* <form
                 action=""
                 onSubmit={(e) => {
                   e.preventDefault(); // Prevent the default form submission behavior
@@ -424,9 +422,7 @@ export default function Scanner() {
                   id="newQty"
                   name="newQty"
                   type="number"
-                  // value={newQty || 0}
                   max={+maxQty}
-                  min={1}
                   onChange={(e) => setNewQty(e.target.value)}
                 />
                 <button
@@ -465,8 +461,9 @@ export default function Scanner() {
               </div>
             </div>
             <div className="m-5">
-              <form action="" 
-              // onSubmit={(e) => handleUpdate(e, newQty)}
+              <form
+                action=""
+                // onSubmit={(e) => handleUpdate(e, newQty)}
               >
                 <label className="block text-gray-700 text-sm font-bold mb-2 ">
                   Tambahkan Product
@@ -484,7 +481,6 @@ export default function Scanner() {
                   className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline my-4"
                   type="submit"
                   onClick={(e) => handleSubmit(e)}
-
                 >
                   Submit
                 </button>
@@ -492,62 +488,7 @@ export default function Scanner() {
             </div>
           </>
         )}
-
-        {/* ) : (
-          <>
-            <div>
-              <div
-                className="bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md m-5"
-                role="alert"
-              >
-                <div className="flex">
-                  <div className="py-1">
-                    <svg
-                      className="fill-current h-6 w-6 text-teal-500 mr-4"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="font-bold">Informasi Rak</p>
-                    <p className="text-sm">Tidak ada Product dalam Rack ini</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div>
-              <form action="" onSubmit={(e) => handleUpdate(e, newQty)}>
-                <label className="block text-gray-700 text-sm font-bold mb-2 ">
-                  Update Jumlah
-                </label>
-                <input
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="newQty"
-                  name="newQty"
-                  type="number"
-                  // value={product[0]?.ttba_qty}
-                  value={newQty || ""}
-                  onChange={(e) => setNewQty(e.target.value)}
-                />
-                <button
-                  className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                  type="submit"
-                >
-                  Submit
-                </button>
-              </form>
-            </div>
-          </>
-        )} */}
       </div>
-
-      {/* <div>
-        <button onClick={() => setOpenQr(!openQr)}>
-          {openQr ? "Close" : "Open"} QR Scanner
-        </button>
-      </div> */}
     </>
   );
 }
