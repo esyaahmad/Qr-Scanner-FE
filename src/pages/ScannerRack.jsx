@@ -23,7 +23,9 @@ export default function ScannerRack() {
   const [forceUpdate, setForceUpdate] = useState(false);
 
 
-  const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
+  // const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
+  const url = "http://localhost:3000";
+
   console.log(`${url}/racks/${scannedRack}`);
 
   async function fetchRack() {
@@ -88,7 +90,7 @@ export default function ScannerRack() {
       <div className="mt-8 h-screen ">
         <div className="px-5 py-3">
           <div className="flex justify-between mt-2 mb-4">
-            <h3>Change Product Location</h3>
+            <p className="text-2xl font-bold text-gray-800">Rack Scanner</p>
             <button
               className="btn btn-sm btn-success"
               onClick={() => setOpenQrRack(!openQrRack)}

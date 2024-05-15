@@ -27,7 +27,9 @@ export default function ModalSwapRack({
   const ttbaRev = ttba.replace(/\//g, "-");
   const itemIdRev = itemId.replace(/\s/g, "_");
 
-  const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
+  // const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
+  const url = "http://localhost:3000";
+
   //   console.log(`${url}/racks/${scannedRackInto}/${ttbaRev}/${itemIdRev}`);
 
   async function fetchRackInto() {
@@ -52,8 +54,8 @@ export default function ModalSwapRack({
       toast.success("Rack data fetched successfully");
     } catch (error) {
       console.log(error);
-      toast.error('Rack tidak ditemukan');
-      setScannedRackInto(undefined);
+      toast.error('Rack Kosong');
+      // setScannedRackInto(undefined);
     //   setOpenQrRack(true);
     } finally {
       toast.dismiss(loadingToastId);

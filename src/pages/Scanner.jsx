@@ -80,12 +80,11 @@ export default function Scanner() {
         setRack(data);
         toast.success("Rack data fetched successfully");
       }
-
       // console.log(rack);
     } catch (error) {
       console.log(error);
-      toast.error(error?.response?.data?.error || "Rak tidak ditemukan");
-      setScannedRack(undefined);
+      toast.error(error?.response?.data?.error || "Rak Kosong");
+      // setScannedRack(undefined);
     } finally {
       toast.dismiss(loadingToastId);
       setLoading(false);
@@ -93,14 +92,20 @@ export default function Scanner() {
   }
 
   const handleSubmit = (e) => {
-    
     if (rack.length === 0) {
-      handleCreate(e);
+      if (newQty <= maxQty) {
+        setMaxQty(maxQty - newQty);
+        handleCreate(e);
+        setScannedRack(undefined)
+        setOpenQrRack(true)
+      } else {
+        alert("New quantity cannot exceed maximum quantity.");
+      }
+      
     } else {
       if (newQty <= maxQty) {
         setMaxQty(maxQty - newQty);
         handleUpdate(e);
-        
       } else {
         alert("New quantity cannot exceed maximum quantity.");
       }
@@ -112,7 +117,7 @@ export default function Scanner() {
     e.preventDefault();
     try {
       if (rack.length > 0) {
-        if (newQty <= 0) {
+        if (newQty <= 0 || newQty === undefined) {
           throw new Error("Quantity must be greater than 0.");
         }
         const response = await axios.patch(
@@ -179,7 +184,19 @@ export default function Scanner() {
         timer: 1000,
       });
 
-      navigate("/");
+      if (maxQty - newQty === 0) {
+        navigate("/");
+        Swal.fire({
+          title: `Success Updated ${newQty} Product to ${scannedRack}`,
+          icon: "success",
+        });
+      } else {
+        navigate("/scanner");
+        Swal.fire({
+          title: `Success Updated ${newQty} Product to ${scannedRack}`,
+          icon: "success",
+        });
+      }
     } catch (error) {
       console.error("Error adding product to rack:", error);
       if (error.response) {
@@ -273,7 +290,7 @@ export default function Scanner() {
       <div className="mt-8 h-screen ">
         <div className="px-5 py-3">
           <div className="flex justify-between mt-2 mb-4">
-            <h3>Input Product Location</h3>
+            <p className="text-2xl font-bold text-gray-800">Product Scanner</p>
             <button
               className="btn btn-sm btn-success"
               onClick={() => setOpenQr(!openQr)}
@@ -283,7 +300,6 @@ export default function Scanner() {
           </div>
           <ToastContainer position="bottom-right" draggable />
           {openQr && <QrScanner setScanned={setScanned} />}
-          {openQrRack && <QrScannerRack setScannedRack={setScannedRack} />}
         </div>
         <div>
           {product.length > 0 ? (
@@ -363,6 +379,7 @@ export default function Scanner() {
             </button>
           )}
         </div>
+        {openQrRack && <QrScannerRack setScannedRack={setScannedRack} />}
 
         {scannedRack && rack.length !== 0 && (
           <>
@@ -423,6 +440,7 @@ export default function Scanner() {
                   name="newQty"
                   type="number"
                   max={+maxQty}
+                  defaultValue={0}
                   onChange={(e) => setNewQty(e.target.value)}
                 />
                 <button
@@ -473,8 +491,10 @@ export default function Scanner() {
                   id="newQty"
                   name="newQty"
                   type="number"
+                  max={+maxQty}
+                  defaultValue={0}
                   // value={product[0]?.ttba_qty}
-                  value={newQty || ""}
+                  // value={newQty || ""}
                   onChange={(e) => setNewQty(e.target.value)}
                 />
                 <button
