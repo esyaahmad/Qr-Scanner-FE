@@ -19,6 +19,9 @@ export default function ScannerRack() {
   const [processDate, setProcessDate] = useState(undefined);
   const [itemName, setItemName] = useState(undefined);
   const [scannedRackFirst, setScannedRackFirst] = useState(undefined);
+  const [ttbaNo, setTtbaNo] = useState(undefined);
+  // const [vatNo, setVatNo] = useState(undefined);
+  // const [vatQty, setVatQty] = useState(undefined);
 
   const [forceUpdate, setForceUpdate] = useState(false);
 
@@ -54,6 +57,21 @@ export default function ScannerRack() {
   //   setTtba();
   // }
 
+  function splitByHashTtba(inputString) {
+    // Split the input string using '#' as the delimiter and return the first part
+    return String(inputString).split('#')[0];
+  }
+
+  function splitByHashVatNo(inputString) {
+    // Split the input string using '#' as the delimiter and return the first part
+    return String(inputString).split('#')[1];
+  }
+
+  function splitByHashVatQty(inputString) {
+    // Split the input string using '#' as the delimiter and return the first part
+    return String(inputString).split('#')[2];
+  }
+
   useEffect(() => {
     // console.log(scanned, "ini scanned");
     if (scannedRack !== undefined) {
@@ -85,6 +103,9 @@ export default function ScannerRack() {
           processDate={processDate}
           scannedRackFirst={scannedRackFirst}
           setForceUpdate={setForceUpdate}
+          ttbaNo={ttbaNo}
+          // vatNo={vatNo}
+          // vatQty={vatQty}
         />
       )}
       <div className="mt-8 h-screen ">
@@ -105,18 +126,19 @@ export default function ScannerRack() {
         
         <div>
 {rack.length > 0 ? (
+<>
+            <p className="text-2xl font-bold text-gray-800">{scannedRack} <p className="text-xs text-gray-800">(Lokasi/Rak/Baris/Kolom)</p></p> 
   
         <table className="table table-zebra">
       <thead>
         <tr>
-          <th>Lokasi</th>
-          <th>Rak</th>
-          <th>Baris</th>
-          <th>Kolom</th>
           <th>DNc_No</th>
+          <th>ttba_no</th>
           <th>Item_ID</th>
           <th>Item_Name</th>
           <th>Qty</th>
+          <th>vat_No</th>
+          <th>vat_qty</th>
           <th>Process_Date</th>
           <th>Action</th>
 
@@ -128,15 +150,14 @@ export default function ScannerRack() {
       <tbody>
         {rack?.map((item, index) => (
           <tr key={index}>
-            <td>{item.Lokasi}</td>
-            <td>{item.Rak}</td>
-            <td>{item.Baris}</td>
-            <td>{item.Kolom}</td>
             <td>{item.DNc_No}</td>
+            <td>{splitByHashTtba(item?.DNc_TTBANo)}</td>
             <td>{item.Item_ID}</td>
             <td>{item.Item_Name}</td>
             <td>{item.Qty}</td>
-            <td>{item.Process_Date}</td>
+            <td>{splitByHashVatNo(item?.DNc_TTBANo)}</td>
+            <td>{splitByHashVatQty(item?.DNc_TTBANo)}</td>
+            <td>{item.Process_Date.replace("T", " ").replace("Z", "")}</td>
             <td>
                 <button className="btn btn-accent" 
                 onClick={() => {
@@ -149,6 +170,9 @@ export default function ScannerRack() {
                   setQty(item.Qty)
                   setProcessDate(item.Process_Date)
                   setItemName(item.Item_Name)
+                  setTtbaNo(item?.DNc_TTBANo)
+                  // setVatNo(splitByHashVatNo(item?.DNc_TTBANo))
+                  // setVatQty(splitByHashVatQty(item?.DNc_TTBANo))
                 }}
                 >Move</button>
             </td>
@@ -160,6 +184,8 @@ export default function ScannerRack() {
         ))}
       </tbody>
     </table>
+</>
+
     ): (
       <div
                 class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 m-5"

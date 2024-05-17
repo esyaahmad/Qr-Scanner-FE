@@ -27,6 +27,11 @@ export default function Scanner() {
 
   const navigate = useNavigate();
 
+  const arrScanned = scanned?.split("#");
+  const ttba = (arrScanned?.[0])?.replace(/\//g, "-");
+  const seqId = arrScanned?.[1];
+  const vat = arrScanned?.[2];
+
   // console.log(`${url}/products/${scanned}`);
   // console.log(`${url}/racks/${scannedRack}/${product[0]?.item_name}`);
   // console.log(
@@ -42,7 +47,7 @@ export default function Scanner() {
       autoClose: false,
     });
     try {
-      const { data } = await axios.get(`${url}/products/${scanned}`);
+      const { data } = await axios.get(`${url}/products/${ttba}/${seqId}/${vat}`);
       console.log(data, "ini data fetchProduct");
       if (data.length === 0) {
         toast.error("Product Not Found");
@@ -85,6 +90,7 @@ export default function Scanner() {
       console.log(error);
       toast.error(error?.response?.data?.error || "Rak Kosong");
       // setScannedRack(undefined);
+      setRack([]);
     } finally {
       toast.dismiss(loadingToastId);
       setLoading(false);
@@ -93,29 +99,41 @@ export default function Scanner() {
 
   const handleSubmit = (e) => {
     if (rack.length === 0) {
-      if (newQty <= maxQty) {
-        setMaxQty(maxQty - newQty);
+      // if (newQty <= maxQty) {
+        // setMaxQty(maxQty - newQty);
         handleCreate(e);
-        setScannedRack(undefined)
-        setOpenQrRack(true)
-      } else {
-        alert("New quantity cannot exceed maximum quantity.");
-      }
+        // setScannedRack(undefined)
+        // setOpenQrRack(true)
+      // } else {
+      //   alert("New quantity cannot exceed maximum quantity.");
+      // }
       
     } else {
-      if (newQty <= maxQty) {
-        setMaxQty(maxQty - newQty);
+      // if (newQty <= maxQty) {
+      //   setMaxQty(maxQty - newQty);
         handleUpdate(e);
-      } else {
-        alert("New quantity cannot exceed maximum quantity.");
-      }
-    }
+      } 
+      // else {
+      //   alert("New quantity cannot exceed maximum quantity.");
+      // }
+    // }
   };
 
   const handleUpdate = async (e) => {
     setLoading(true);
     e.preventDefault();
     try {
+      const body = {
+        newQty,
+        ttba_no: ttba,
+        Item_Name: (product[0]?.item_name).replace(/_/g, " "),
+        seq_id: seqId,
+        qty_ttba: Number(product[0]?.ttba_qty),
+        ttba_itemUnit: product[0]?.ttba_itemUnit,
+        vat_no: +vat,
+        vat_qty: product[0]?.TTBA_VATQTY,
+        ttba_scanned: scanned
+      };
       if (rack.length > 0) {
         if (newQty <= 0 || newQty === undefined) {
           throw new Error("Quantity must be greater than 0.");
@@ -125,7 +143,7 @@ export default function Scanner() {
             /\s/g,
             "_"
           )}/${product[0]?.No_analisa?.replace(/\//g, "-")}`,
-          { newQty }
+          body
         );
 
         if (maxQty - newQty === 0) {
@@ -144,13 +162,16 @@ export default function Scanner() {
       }
     } catch (error) {
       console.error("Error updating product:", error);
-      if (error.response) {
-        toast.error(
-          "An error occurred while updating product. Please try again later."
-        );
-      } else {
-        toast.error(error.message || "An unexpected error occurred.");
-      }
+      // if (error.response) {
+      //   toast.error(
+      //     "An error occurred while updating product. Please try again later."
+      //   );
+      // } else {
+        toast.error(error.response.data.message);
+        setScannedRack(undefined)
+        setRack([])
+        setOpenQrRack(true)
+      // }
     } finally {
       setLoading(false);
     }
@@ -165,8 +186,17 @@ export default function Scanner() {
       }
       const body = {
         newQty,
+        ttba_no: ttba,
         Process_Date: product[0]?.ttba_date,
         Item_Name: (product[0]?.item_name).replace(/_/g, " "),
+        seq_id: seqId,
+        qty_ttba: Number(product[0]?.ttba_qty),
+        // qty_per_vat: (product[0]?.ttba_qty / product[0]?.TTBA_VATQTY),
+        ttba_itemUnit: product[0]?.ttba_itemUnit,
+        // qty_less: (product[0]?.ttba_qty - newQty),
+        vat_no: +vat,
+        vat_qty: product[0]?.TTBA_VATQTY,
+        ttba_scanned: scanned
       };
 
       const response = await axios.post(
@@ -199,13 +229,16 @@ export default function Scanner() {
       }
     } catch (error) {
       console.error("Error adding product to rack:", error);
-      if (error.response) {
-        toast.error(
-          "An error occurred while adding product to rack. Please try again later."
-        );
-      } else {
-        toast.error(error.message || "An unexpected error occurred.");
-      }
+      // if (error.response) {
+      //   toast.error(
+      //     "An error occurred while adding product to rack. Please try again later."
+      //   );
+      // } else {
+        toast.error(error.response.data.message);
+        setScannedRack(undefined)
+        setRack([])
+        setOpenQrRack(true)
+      // }
       // setScannedRack(undefined)
     } finally {
       setLoading(false);
@@ -231,8 +264,9 @@ export default function Scanner() {
   }, [scanned]);
 
   useEffect(() => {
-    setNewQty(product[0]?.ttba_qty);
-    setMaxQty(product[0]?.ttba_qty);
+    let realQty = Math.ceil((product[0]?.ttba_qty)/(product[0]?.TTBA_VATQTY));
+    setNewQty(realQty);
+    setMaxQty(realQty);
     // console.log(product, '1234');
   }, [product]);
 
@@ -307,13 +341,13 @@ export default function Scanner() {
               <tbody>
                 <tr>
                   <th>TTBA</th>
-                  <td>{scanned}</td>
+                  <td>{ttba}</td>
                 </tr>
                 {product?.map((item) => (
                   <>
                     <tr key={item?.TTBA_SeqID}>
                       <th>Nama Produk</th>
-                      <td>{item?.item_name}</td>
+                      <td>{item?.item_name} {item?.ttba_itemid}</td>
                     </tr>
                     <tr>
                       <th>Group</th>
@@ -351,7 +385,11 @@ export default function Scanner() {
                     </tr>
                     <tr>
                       <th>Qty</th>
-                      <td>{item?.ttba_qty}</td>
+                      <td>{Math.ceil((item?.ttba_qty)/(item?.TTBA_VATQTY))} {item?.ttba_itemUnit}</td>
+                    </tr>
+                    <tr>
+                      <th>Wadah</th>
+                      <td>{vat} dari {(item?.TTBA_VATQTY)}</td>
                     </tr>
                   </>
                 ))}
@@ -439,8 +477,10 @@ export default function Scanner() {
                   id="newQty"
                   name="newQty"
                   type="number"
-                  max={+maxQty}
-                  defaultValue={0}
+                  // max={+maxQty}
+                  // defaultValue={0}
+                  value={newQty}
+                  readOnly
                   onChange={(e) => setNewQty(e.target.value)}
                 />
                 <button
@@ -491,10 +531,10 @@ export default function Scanner() {
                   id="newQty"
                   name="newQty"
                   type="number"
-                  max={+maxQty}
-                  defaultValue={0}
-                  // value={product[0]?.ttba_qty}
-                  // value={newQty || ""}
+                  // max={+maxQty}
+                  // defaultValue={0}
+                  value={newQty}
+                  readOnly
                   onChange={(e) => setNewQty(e.target.value)}
                 />
                 <button
