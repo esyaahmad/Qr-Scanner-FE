@@ -14,6 +14,7 @@ export default function ModalSwapRack({
   itemName,
   scannedRackFirst,
   setForceUpdate,
+  ttbaNo,
 }) {
   const [scannedRackInto, setScannedRackInto] = useState(undefined);
   const [openQrRack, setOpenQrRack] = useState(true);
@@ -21,13 +22,23 @@ export default function ModalSwapRack({
   const [newQty, setNewQty] = useState(0);
   const [loading, setLoading] = useState(false);
   //   console.log(scannedRackInto, "ini scannedRackInto");
-  //   console.log(ttba);
+    // console.log(ttbaNo, "ini ttbaNo");
   //   console.log(itemId);
   //   console.log(scannedRackFirst);
   const ttbaRev = ttba.replace(/\//g, "-");
   const itemIdRev = itemId.replace(/\s/g, "_");
 
-  const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
+  function transformString(inputString) {
+    let result = inputString.replace(/\//g, '%2f');
+    result = result.replace(/#/g, '%23');
+    return result;
+  }
+  const ttbaNoRev = transformString(ttbaNo);
+  console.log(ttbaNoRev, "ini ttbaNoRev");
+
+  // const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
+  const url = "http://localhost:3000";
+
   //   console.log(`${url}/racks/${scannedRackInto}/${ttbaRev}/${itemIdRev}`);
 
   async function fetchRackInto() {
@@ -41,19 +52,38 @@ export default function ModalSwapRack({
         //   throw new Error("No data found for the scanned rack.");
         // }
     
+        //ini terbaru
       const { data } = await axios.get(
-        `${url}/racks/${scannedRackInto}/${itemIdRev}/${ttbaRev}`
+        `${url}/racks/${scannedRackInto}/${itemIdRev}/${ttbaRev}/${ttbaNoRev}`
       );
 
-      if (data.length === 0) {
-        throw new Error("No data found in the rack.");
+      if (data) {
+        // console.log(data);
+        throw new Error("Produk sudah terdaftar pada rak ini");
       }
+
+      // ini yg lama
+      // const { data } = await axios.get(
+      //   `${url}/racks/${scannedRackInto}/${itemIdRev}/${ttbaRev}`
+      // );
+      // if (data.length === 0) {
+      //   throw new Error("No data found in the rack.");
+      // }
       setRackInto(data);
       toast.success("Rack data fetched successfully");
     } catch (error) {
       console.log(error);
-      toast.error('Rack tidak ditemukan');
-      setScannedRackInto(undefined);
+      if (error.response) {
+        toast.error(
+          "Produk tidak ada di rak ini"
+        );
+      } else {
+        toast.error(error.message || "An unexpected error occurred.");
+        // setRackInto([]);
+        setScannedRackInto(undefined);
+
+      }
+      // setScannedRackInto(undefined);
     //   setOpenQrRack(true);
     } finally {
       toast.dismiss(loadingToastId);
@@ -98,7 +128,7 @@ export default function ModalSwapRack({
           "An error occurred while adding product to rack. Please try again later."
         );
       } else {
-        toast.error(error.message || "An unexpected error occurred.");
+        toast.error(error .message || "An unexpected error occurred.");
       }
     } finally {
       setLoading(false);
@@ -248,7 +278,9 @@ export default function ModalSwapRack({
                     id="newQty"
                     name="newQty"
                     type="number"
-                    max={qty}
+                    // max={qty}
+                    value={qty}
+                    readOnly
                     onChange={(e) => setNewQty(e.target.value)}
                   />
                   {!loading && (
@@ -306,7 +338,8 @@ export default function ModalSwapRack({
                     id="newQty"
                     name="newQty"
                     type="number"
-                    max={qty}
+                    // max={qty}
+                    value={qty}
                     onChange={(e) => setNewQty(e.target.value)}
                   />
                   {!loading && (

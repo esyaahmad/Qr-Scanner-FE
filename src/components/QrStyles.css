@@ -3,6 +3,7 @@
   height: 40vh;
   margin: 0 auto;
   position: relative;
+  padding: 10px;
 }
 
 .qr-reader video {
@@ -22,6 +23,7 @@
   left: 50%;
   top: 50%;
   transform: translateX(-50%) translateY(-50%);
+  
 }
 
 /* Media Queries for mobile screens */
