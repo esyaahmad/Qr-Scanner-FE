@@ -26,8 +26,8 @@ export default function ScannerRack() {
   const [forceUpdate, setForceUpdate] = useState(false);
 
 
-  // const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
-  const url = "http://localhost:3000";
+  const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
+  // const url = "http://localhost:3000";
 
   console.log(`${url}/racks/${scannedRack}`);
 

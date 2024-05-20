@@ -44,8 +44,8 @@ export default function ModalSwapRack({
   // const ttbaNoRev = transformString(ttbaNo);
   // console.log(ttbaNoRev, "ini ttbaNoRev");
 
-  // const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
-  const url = "http://localhost:3000";
+  const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
+  // const url = "http://localhost:3000";
 
   //   console.log(`${url}/racks/${scannedRackInto}/${noAnalisaRev}/${itemIdRev}`);
 

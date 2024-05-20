@@ -23,8 +23,8 @@ export default function Scanner() {
   const [newQty, setNewQty] = useState(0);
   const [maxQty, setMaxQty] = useState(0);
 
-  // const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
-  const url = "http://localhost:3000";
+  const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
+  // const url = "http://localhost:3000";
 
   const navigate = useNavigate();
 
