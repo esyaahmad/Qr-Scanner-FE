@@ -35,6 +35,7 @@ export default function ModalSwapRack({
   console.log(scannedRackFirst, "ini scannedRackFirst");
   const noAnalisaRev = DNcNo.replace(/\//g, "%2f");
   const itemIdRev = itemId.replace(/\s/g, "_");
+  const ttbaOnly = (ttbaScanned.split("#")[0]).replace(/\//g, "%2f");
 
   // function transformString(inputString) {
   //   let result = inputString.replace(/\//g, '%2f');
@@ -50,7 +51,7 @@ export default function ModalSwapRack({
   //   console.log(`${url}/racks/${scannedRackInto}/${noAnalisaRev}/${itemIdRev}`);
 
   function encodeSpecialCharacters(input) {
-    return input.replace(/\//g, "%2f").replace(/#/g, "%23");
+    return input.replace(/\//g, "%2F").replace(/#/g, "%23");
   }
 
   async function fetchRackInto() {
@@ -108,7 +109,7 @@ export default function ModalSwapRack({
     });
     try {
       const { data } = await axios.get(
-        `${url}/products/${noAnalisaRev}/${itemId}`
+        `${url}/productsByTtba/${noAnalisaRev}/${itemIdRev}/${ttbaOnly}`
       );
       console.log(data, "ini data fetchProduct");
       if (data.length === 0) {
@@ -120,7 +121,7 @@ export default function ModalSwapRack({
       // console.log(product);
     } catch (error) {
       console.log(error);
-      toast.error(error?.response?.data?.error || "Product tidak ditemukan");
+      // toast.error(error?.response?.data?.error || "Product tidak ditemukan");
       // setScanned(undefined);
       // setProduct([]);
     } finally {
@@ -141,7 +142,7 @@ export default function ModalSwapRack({
         ttba_no: splitByHashTtba(ttbaScanned),
         Process_Date: processDate,
         Item_Name: itemName,
-        seq_id: String(product[0].TTBA_SeqID),
+        seq_id: splitByHashSeqId(ttbaScanned),
         qty_ttba: product[0].ttba_qty,
         ttba_itemUnit: product[0].ttba_itemUnit,
         // vat_no: getLastSegmentAfterHash(ttbaNo),
@@ -251,6 +252,7 @@ export default function ModalSwapRack({
     // console.log(scanned, "ini scanned");
     if (scannedRackInto !== undefined) {
       fetchRackInto();
+      setNewQty(qty);
       fetchProduct();
       setOpenQrRack(false);
     }
@@ -274,6 +276,8 @@ export default function ModalSwapRack({
   }
 
   console.log(rackInto, "ini rackInto");
+  console.log(product, "ini product");
+  console.log(qty, "ini qty");
   return (
     <>
       <div className="fixed top-0 left-0 z-[100] h-full w-full bg-gray-600 bg-opacity-40 flex items-center justify-center">
@@ -420,8 +424,9 @@ export default function ModalSwapRack({
                     type="number"
                     max={qty}
                     defaultValue={qty}
+                    value={qty}
                     readOnly
-                    onChange={(e) => setNewQty(e.target.value)}
+                    // onChange={(e) => setNewQty(e.target.value)}
                   />
                   {/* <label className="block text-gray-700 text-sm font-bold mb-2 ">
                     Vat No

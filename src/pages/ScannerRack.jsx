@@ -40,13 +40,17 @@ export default function ScannerRack() {
       const { data } = await axios.get(
         `${url}/racks/${scannedRack}`
       );
+      if (data.length === 0) {
+        throw new Error ("Rack ini kosong");
+      }
       setRack(data);
       toast.success("Rack data fetched successfully");
 
     } catch (error) {
       console.log(error);
-      toast.error(error?.response?.data?.error || "Rak tidak ditemukan");
+      toast.error(error?.response?.data?.message);
       setScannedRack(undefined);
+      setRack([]);
     } finally {
       toast.dismiss(loadingToastId);
       setLoading(false);
