@@ -59,7 +59,11 @@ export default function Scanner() {
       // console.log(product);
     } catch (error) {
       console.log(error);
-      toast.error(error?.response.data.message);
+      Swal.fire({
+        title: error?.response?.data?.message,
+        icon: "error",
+      });
+      // toast.error(error?.response.data.message);
       setScanned(undefined);
       setProduct([]);
     } finally {
@@ -445,9 +449,13 @@ export default function Scanner() {
                       <th>tgl. Daluarsa</th>
                       <td>{item?.Tgl_daluarsa}</td>
                     </tr>
-                    <tr>
+                    {/* <tr>
                       <th>Qty</th>
                       <td>{Math.ceil((item?.ttba_qty)/(item?.TTBA_VATQTY))} {item?.ttba_itemUnit}</td>
+                    </tr> */}
+                    <tr>
+                      <th>Qty TTBA</th>
+                      <td>{(item?.ttba_qty)} {item?.ttba_itemUnit}</td>
                     </tr>
                     <tr>
                       <th>Wadah</th>
@@ -460,10 +468,10 @@ export default function Scanner() {
           ) : (
             <>
               <div
-                class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 m-5"
+                className="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 m-5"
                 role="alert"
               >
-                <p class="font-bold">Product</p>
+                <p className="font-bold">Product</p>
                 <p>Silahkan Scan QR Produk</p>
               </div>
             </>
@@ -574,6 +582,8 @@ export default function Scanner() {
                   <div>
                     <p className="font-bold">Informasi Rak</p>
                     <p className="text-sm">Tidak ada Product dalam Rack ini</p>
+                    <p className="font-bold">Sisa Quantity : {maxQty}</p>
+
                   </div>
                 </div>
               </div>
