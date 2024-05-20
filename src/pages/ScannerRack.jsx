@@ -20,7 +20,7 @@ export default function ScannerRack() {
   const [itemName, setItemName] = useState(undefined);
   const [scannedRackFirst, setScannedRackFirst] = useState(undefined);
   const [ttbaNo, setTtbaNo] = useState(undefined);
-  // const [vatNo, setVatNo] = useState(undefined);
+  // const [vatNo, setVatNo] = useState(undefined); 
   // const [vatQty, setVatQty] = useState(undefined);
 
   const [forceUpdate, setForceUpdate] = useState(false);
@@ -53,19 +53,17 @@ export default function ScannerRack() {
     }
   }
 
-  // async function handleTTba () {
-  //   setTtba();
-  // }
-
+ 
   function splitByHashTtba(inputString) {
     // Split the input string using '#' as the delimiter and return the first part
     return String(inputString).split('#')[0];
   }
 
-  function splitByHashVatNo(inputString) {
+  function splitByHashSeqId(inputString) {
     // Split the input string using '#' as the delimiter and return the first part
     return String(inputString).split('#')[1];
   }
+
 
   function splitByHashVatQty(inputString) {
     // Split the input string using '#' as the delimiter and return the first part
@@ -96,14 +94,14 @@ export default function ScannerRack() {
     {isModalOpen && (
         <ModalSwapRack
           handleCloseModal={() => setIsModalOpen(false)}
-          ttba={ttba}
+          DNcNo={ttba}
           itemId={itemId}
           qty={qty}
           itemName={itemName}
           processDate={processDate}
           scannedRackFirst={scannedRackFirst}
           setForceUpdate={setForceUpdate}
-          ttbaNo={ttbaNo}
+          ttbaScanned={ttbaNo}
           // vatNo={vatNo}
           // vatQty={vatQty}
         />
@@ -137,8 +135,8 @@ export default function ScannerRack() {
           <th>Item_ID</th>
           <th>Item_Name</th>
           <th>Qty</th>
+          {/* <th>vat_qty</th> */}
           <th>vat_No</th>
-          <th>vat_qty</th>
           <th>Process_Date</th>
           <th>Action</th>
 
@@ -155,7 +153,7 @@ export default function ScannerRack() {
             <td>{item.Item_ID}</td>
             <td>{item.Item_Name}</td>
             <td>{item.Qty}</td>
-            <td>{splitByHashVatNo(item?.DNc_TTBANo)}</td>
+            {/* <td>{splitByHashVatNo(item?.DNc_TTBANo)}</td> */}
             <td>{splitByHashVatQty(item?.DNc_TTBANo)}</td>
             <td>{item.Process_Date.replace("T", " ").replace("Z", "")}</td>
             <td>
@@ -185,13 +183,13 @@ export default function ScannerRack() {
       </tbody>
     </table>
 </>
-
+  
     ): (
       <div
-                class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 m-5"
+                className="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 m-5"
                 role="alert"
               >
-                <p class="font-bold">Rack</p>
+                <p className="font-bold">Rack</p>
                 <p>Silahkan Scan QR Rack</p>
               </div>
     )}

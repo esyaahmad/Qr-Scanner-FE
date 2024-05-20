@@ -18,6 +18,7 @@ export default function Scanner() {
 
   const [product, setProduct] = useState([]);
   const [rack, setRack] = useState([]);
+  const [productDetail, setProductDetail] = useState([]);
 
   const [newQty, setNewQty] = useState(0);
   const [maxQty, setMaxQty] = useState(0);
@@ -58,9 +59,32 @@ export default function Scanner() {
       // console.log(product);
     } catch (error) {
       console.log(error);
-      toast.error(error?.response?.data?.error || "Product tidak ditemukan");
+      toast.error(error?.response.data.message);
       setScanned(undefined);
       setProduct([]);
+    } finally {
+      toast.dismiss(loadingToastId);
+      setLoading(false);
+    }
+  }
+
+  async function fetchProductDetail() {
+    setLoading(true);
+    const loadingToastId = toast.info("Fetching product data...", {
+      autoClose: false,
+    });
+    try {
+      const {data} = await axios.get(`${url}/detailProd/${ttba}/${seqId}`);
+      console.log(data, "ini data fetchProductDetail");
+      
+        setProductDetail(data);
+        // toast.success("Product data fetched successfully");
+      // console.log(product);
+    } catch (error) {
+      console.log(error);
+      // toast.error(error?.response.data.message);
+      // setScanned(undefined);
+      // setProduct([]);
     } finally {
       toast.dismiss(loadingToastId);
       setLoading(false);
@@ -75,8 +99,13 @@ export default function Scanner() {
     const itemId = product[0]?.ttba_itemid?.replace(/\s/g, "_");
     const noAnalisa = product[0]?.No_analisa?.replace(/\//g, "-");
     try {
+      
+      // const { data } = await axios.get(
+      //   `${url}/racks/${scannedRack}/${itemId}/${noAnalisa}`
+      // );
+
       const { data } = await axios.get(
-        `${url}/racks/${scannedRack}/${itemId}/${noAnalisa}`
+        `${url}/racks/${scannedRack}/${scanned}`
       );
       if (data.length === 0) {
         toast.error("Rack Not Found");
@@ -123,6 +152,7 @@ export default function Scanner() {
     setLoading(true);
     e.preventDefault();
     try {
+      
       const body = {
         newQty,
         ttba_no: ttba,
@@ -135,8 +165,15 @@ export default function Scanner() {
         ttba_scanned: scanned
       };
       if (rack.length > 0) {
-        if (newQty <= 0 || newQty === undefined) {
+        // if (newQty <= 0 || newQty === undefined) {
+        //   throw new Error("Quantity must be greater than 0.");
+        // }
+
+        if (newQty <= 0) {
           throw new Error("Quantity must be greater than 0.");
+        }
+        if (newQty > maxQty) {
+          throw new Error("Quantity exceeds maximum quantity.");
         }
         const response = await axios.patch(
           `${url}/racks/${scannedRack}/${product[0]?.ttba_itemid?.replace(
@@ -146,19 +183,25 @@ export default function Scanner() {
           body
         );
 
-        if (maxQty - newQty === 0) {
-          navigate("/");
-          Swal.fire({
-            title: `Success Updated ${newQty} Product to ${scannedRack}`,
-            icon: "success",
-          });
-        } else {
-          navigate("/scanner");
-          Swal.fire({
-            title: `Success Updated ${newQty} Product to ${scannedRack}`,
-            icon: "success",
-          });
-        }
+        navigate("/");
+        Swal.fire({
+          title: `Success Updated ${newQty} Product to ${scannedRack}`,
+          icon: "success",
+        });
+
+        // if (maxQty - newQty === 0) {
+        //   navigate("/");
+        //   Swal.fire({
+        //     title: `Success Updated ${newQty} Product to ${scannedRack}`,
+        //     icon: "success",
+        //   });
+        // } else {
+        //   navigate("/scanner");
+        //   Swal.fire({
+        //     title: `Success Updated ${newQty} Product to ${scannedRack}`,
+        //     icon: "success",
+        //   });
+        // }
       }
     } catch (error) {
       console.error("Error updating product:", error);
@@ -184,6 +227,10 @@ export default function Scanner() {
       if (newQty <= 0) {
         throw new Error("Quantity must be greater than 0.");
       }
+      if (newQty > maxQty) {
+        throw new Error("Quantity exceeds maximum quantity.");
+      }
+      
       const body = {
         newQty,
         ttba_no: ttba,
@@ -208,25 +255,25 @@ export default function Scanner() {
       );
 
       Swal.fire({
-        title: "Success Added Product to Rack",
+        title: `Success Updated ${newQty} Product to ${scannedRack}`,
         icon: "success",
-        showConfirmButton: false,
-        timer: 1000,
       });
+      navigate("/");
 
-      if (maxQty - newQty === 0) {
-        navigate("/");
-        Swal.fire({
-          title: `Success Updated ${newQty} Product to ${scannedRack}`,
-          icon: "success",
-        });
-      } else {
-        navigate("/scanner");
-        Swal.fire({
-          title: `Success Updated ${newQty} Product to ${scannedRack}`,
-          icon: "success",
-        });
-      }
+      // if (maxQty - newQty === 0) {
+      //   navigate("/");
+      //   Swal.fire({
+      //     title: `Success Updated ${newQty} Product to ${scannedRack}`,
+      //     icon: "success",
+      //   });
+      // } else {
+      //   navigate("/scanner");
+      //   Swal.fire({
+      //     title: `Success Updated ${newQty} Product to ${scannedRack}`,
+      //     icon: "success",
+      //   });
+      // }
+      
     } catch (error) {
       console.error("Error adding product to rack:", error);
       // if (error.response) {
@@ -234,10 +281,14 @@ export default function Scanner() {
       //     "An error occurred while adding product to rack. Please try again later."
       //   );
       // } else {
-        toast.error(error.response.data.message);
+        if (error.message === "Quantity must be greater than 0." || error.message === "Quantity exceeds maximum quantity.") {
+          toast.error(error.message);
+        } else {
+        toast.error(`${error.message} (rak tidak ditemukan)` );
         setScannedRack(undefined)
         setRack([])
         setOpenQrRack(true)
+        }
       // }
       // setScannedRack(undefined)
     } finally {
@@ -255,6 +306,7 @@ export default function Scanner() {
     console.log(scanned, "ini scanned");
     if (scanned !== undefined) {
       fetchProduct();
+      fetchProductDetail();
       // setProductName(product[0]?.item_name);
       setOpenQr(false);
       // console.log(product, '1234'); kalo ini undefined, harus buat useEffect lagi yang ngewatch product
@@ -266,9 +318,19 @@ export default function Scanner() {
   useEffect(() => {
     let realQty = Math.ceil((product[0]?.ttba_qty)/(product[0]?.TTBA_VATQTY));
     setNewQty(realQty);
-    setMaxQty(realQty);
+    if (productDetail.qty_less === undefined) {
+      setMaxQty(product[0]?.ttba_qty);
+    } else {
+      setMaxQty(productDetail.qty_less);
+    }
     // console.log(product, '1234');
   }, [product]);
+
+  // useEffect(() => {
+  //   if (productDetail) {
+  //     setMaxQty(productDetail.qty_less);
+  //   }
+  // }, [product]);
 
   useEffect(() => {
     if (scannedRack !== undefined) {
@@ -477,10 +539,8 @@ export default function Scanner() {
                   id="newQty"
                   name="newQty"
                   type="number"
-                  // max={+maxQty}
-                  // defaultValue={0}
-                  value={newQty}
-                  readOnly
+                  max={maxQty}
+                  defaultValue={newQty}
                   onChange={(e) => setNewQty(e.target.value)}
                 />
                 <button
@@ -531,10 +591,10 @@ export default function Scanner() {
                   id="newQty"
                   name="newQty"
                   type="number"
-                  // max={+maxQty}
-                  // defaultValue={0}
-                  value={newQty}
-                  readOnly
+                  max={maxQty}
+                  defaultValue={newQty}
+                  // value={newQty}
+                  // readOnly
                   onChange={(e) => setNewQty(e.target.value)}
                 />
                 <button
