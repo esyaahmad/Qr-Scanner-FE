@@ -186,10 +186,10 @@ export default function ScannerRack() {
   
     ): (
       <div
-                class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 m-5"
+                className="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 m-5"
                 role="alert"
               >
-                <p class="font-bold">Rack</p>
+                <p className="font-bold">Rack</p>
                 <p>Silahkan Scan QR Rack</p>
               </div>
     )}

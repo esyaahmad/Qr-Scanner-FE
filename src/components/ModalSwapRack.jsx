@@ -91,6 +91,7 @@ export default function ModalSwapRack({
         toast.error(error.message || "An unexpected error occurred.");
         // setRackInto([]);
         setScannedRackInto(undefined);
+        setRackInto([]);
       }
       // setScannedRackInto(undefined);
       //   setOpenQrRack(true);
@@ -272,6 +273,7 @@ export default function ModalSwapRack({
     return String(inputString).split("#")[2];
   }
 
+  console.log(rackInto, "ini rackInto");
   return (
     <>
       <div className="fixed top-0 left-0 z-[100] h-full w-full bg-gray-600 bg-opacity-40 flex items-center justify-center">
@@ -418,6 +420,7 @@ export default function ModalSwapRack({
                     type="number"
                     max={qty}
                     defaultValue={qty}
+                    readOnly
                     onChange={(e) => setNewQty(e.target.value)}
                   />
                   {/* <label className="block text-gray-700 text-sm font-bold mb-2 ">
