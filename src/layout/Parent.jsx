@@ -1,15 +1,17 @@
 import { Outlet } from "react-router-dom";
 import Sidenav from "../components/Sidenav";
+import Navbar from "../components/Navbar";
 
 export default function Parent() {
   return (
     <>
-    <div className="flex flex-row">
+    <div className="flex ">
     <div>
 
-      <Sidenav/>
+      {/* <Sidenav/> */}
+      <Navbar/>
     </div>
-    <div className=" w-full">
+    <div className=" w-full mt-10">
 
       <Outlet />
     </div>

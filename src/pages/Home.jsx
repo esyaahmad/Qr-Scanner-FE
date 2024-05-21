@@ -8,34 +8,18 @@ export default function Home() {
     <div className="mt-8 h-screen ">
       <div className="px-5 py-3">
         <div className="flex flex-col items-center justify-center p-4">
-          <header className="bg-gray-100 shadow-md rounded-lg p-6 w-full max-w-lg text-center mb-4">
+          <header className="bg-[#E8DFCA] shadow-md rounded-lg p-6 w-full max-w-lg text-center mb-4">
             <h1 className="text-2xl font-bold text-gray-800">
               Aplikasi Pemetaan Gudang
             </h1>
           </header>
-          <main className="bg-gray-100 shadow-md rounded-lg p-6 w-full max-w-lg">
+          <main className="bg-[#E8DFCA] shadow-md rounded-lg p-6 w-full max-w-lg">
             <p className="text-gray-700 mb-4">
-              Silahkan klik tombol 
-              <span className="inline-flex items-center mx-2">
-              <svg
-              className="w-6 h-6 border border-gray-800 rounded p-1"
-              aria-hidden="true"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                clipRule="evenodd"
-                fillRule="evenodd"
-                d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
-              />
-            </svg>
-              </span>
-              di pojok kiri atas untuk mengakses menu
+              Silahkan klik Transaction pada Navbar untuk mengakses menu
             </p>
             <div className="flex flex-col space-y-4">
               <Link to={"/scanner"}>
-                <button className="btn btn-neutral w-full">
+                <button className="btn btn-neutral bg-[#1A4D2E] w-full">
                   <svg
                     className="w-6 h-6 text-white dark:text-white"
                     aria-hidden="true"
@@ -67,7 +51,7 @@ export default function Home() {
                 menambahkannya ke Rak
               </p>
               <Link to={"/scannerRack"}>
-                <button className="btn btn-accent w-full">
+                <button className="btn btn-neutral bg-[#006769] w-full">
                   <svg
                     className="w-6 h-6 text-white dark:text-white"
                     aria-hidden="true"
