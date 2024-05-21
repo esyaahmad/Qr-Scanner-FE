@@ -74,9 +74,9 @@ export default function Scanner() {
 
   async function fetchProductDetail() {
     setLoading(true);
-    const loadingToastId = toast.info("Fetching product data...", {
-      autoClose: false,
-    });
+    // const loadingToastId = toast.info("Fetching product data...", {
+    //   autoClose: false,
+    // });
     try {
       const {data} = await axios.get(`${url}/detailProd/${ttba}/${seqId}`);
       console.log(data, "ini data fetchProductDetail");
@@ -90,7 +90,7 @@ export default function Scanner() {
       // setScanned(undefined);
       // setProduct([]);
     } finally {
-      toast.dismiss(loadingToastId);
+      // toast.dismiss(loadingToastId);
       setLoading(false);
     }
   }
@@ -323,6 +323,7 @@ export default function Scanner() {
     let realQty = Math.ceil((product[0]?.ttba_qty)/(product[0]?.TTBA_VATQTY));
     setNewQty(realQty);
     if (productDetail.qty_less === undefined) {
+      setMaxQty(0)
       setMaxQty(product[0]?.ttba_qty);
     } else {
       setMaxQty(productDetail.qty_less);
@@ -392,7 +393,7 @@ export default function Scanner() {
           <div className="flex justify-between mt-2 mb-4">
             <p className="text-2xl font-bold text-gray-800">Product Scanner</p>
             <button
-              className="btn btn-sm btn-success"
+              className="btn btn-sm btn-neutral bg-[#4F6F52]"
               onClick={() => setOpenQr(!openQr)}
             >
               {openQr ? "Close" : "Open"} Scan QR
@@ -468,7 +469,7 @@ export default function Scanner() {
           ) : (
             <>
               <div
-                className="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 m-5"
+                className="fixed bottom-0 w-full bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 m-5"
                 role="alert"
               >
                 <p className="font-bold">Product</p>

@@ -167,13 +167,14 @@ export default function ModalSwapRack({
       );
 
       Swal.fire({
-        title: "Success Added Product to Rack",
+        title: "Success, Product Moved!",
         icon: "success",
       });
       setForceUpdate((prev) => !prev);
 
       handleCloseModal();
     } catch (error) {
+      console.log(error);
       console.error("Error adding product to rack:", error);
       if (error.response) {
         toast.error(
