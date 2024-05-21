@@ -4,6 +4,7 @@ import { LuUser } from "react-icons/lu";
 import { MdLayers } from "react-icons/md";
 // import { UserContext } from "../context/UserContext";
 import LiveDateTime from "./Widgets/LiveDateTime";
+import { FaBars, FaTimes } from "react-icons/fa";
 
 export default function Navbar() {
   // prod
@@ -64,6 +65,7 @@ export default function Navbar() {
 
   const [openSubMenu, setOpenSubMenu] = useState(null);
   const [openSubMenuProfile, setOpenSubMenuProfile] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const subMenuRef = useRef(null);
   const subMenuProfileRef = useRef(null);
@@ -135,6 +137,10 @@ export default function Navbar() {
     navigate(_route);
   };
 
+  const handleMenuClick = () => {
+    setMenuOpen(false); // Close hamburger menu when an item is clicked
+  };
+  
   return (
     <nav className="z-[99] fixed w-full h-16 border-b border-primary bg-[#1A4D2E] text-white flex items-center">
       <div className="mx-4 md:mx-8 w-full flex justify-between items-center">
@@ -146,9 +152,21 @@ export default function Navbar() {
             <div className="text-xl font-bold">E-Pemetaan Gudang</div>
           </Link>
 
+          {/* Hamburger Menu for Mobile */}
+          <button
+            className="md:hidden text-white"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+          </button>
+
           {/* menu */}
-          <div className="p-2">
-            <ul className="flex flex-col md:flex-row gap-2">
+          <div
+            className={`${
+              menuOpen ? "flex" : "hidden"
+            } md:flex flex-col md:flex-row p-2 md:p-0 absolute md:static top-16 left-0 md:top-auto md:left-auto bg-[#1A4D2E] md:bg-transparent w-full md:w-auto transition-all duration-300 z-[98]`}
+          >
+            <ul className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
               {["Master", "Transaction", "Report", "Helper"]?.map(
                 (menu, menuIndex) => (
                   <li key={menuIndex} className="relative">
@@ -179,11 +197,12 @@ export default function Navbar() {
                                 {subMenu?.submenu_page ? (
                                   <button
                                     type="button"
-                                    onClick={() =>
+                                    onClick={() => {
                                       handleNavigate(
                                         `/${subMenu?.submenu_page || "#"}`
                                       )
-                                    }
+                                      handleMenuClick();
+                                    }}
                                     className="w-full text-left block py-2 pl-4 pr-6 whitespace-nowrap text-gray-900 rounded transition duration-200 hover:bg-gray-100 hover:text-primary"
                                   >
                                     {subMenu?.submenu_description || ""}
@@ -232,7 +251,7 @@ export default function Navbar() {
               </div>
 
               <div
-                className={`flex flex-col text-left ${
+                className={`hidden md:flex flex-col text-left ${
                   user?.delegatedAs?.Nama ? "text-sm" : ""
                 }`}
               >
