@@ -8,3 +8,30 @@
 
 }
 
+.print-preview-button {
+  @media print {
+    display: none;
+  }
+}
+
+.print-component {
+  display: none;
+  width: 100%;
+
+  @media print {
+    display: table;
+  }
+}
+
+.hover-grab {
+  cursor: default;
+}
+
+.hover-grab:hover {
+  cursor: grab;
+}
+
+.hover-grab.grabbing {
+  cursor: grabbing;
+}
+

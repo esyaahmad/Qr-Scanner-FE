@@ -9,7 +9,7 @@ export default function Parent() {
     <div>
 
       {/* <Sidenav/> */}
-      <Navbar/>
+      <Navbar className="print-preview-button"/>
     </div>
     <div className=" w-full mt-10">
 
