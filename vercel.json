@@ -1,8 +1,6 @@
+
+
 {
-    "rewrites": [
-        {
-            "source": "/ePemetaanBarang/*",
-            "destination": "/ePemetaanBarang/index.html"
-        }
-    ]
-}
+    "source": "/ePemetaanBarang/*",
+    "destination": "/ePemetaanBarang/index.html"
+  }
