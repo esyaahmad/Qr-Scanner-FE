@@ -40,7 +40,7 @@ export default function WithdrawSampling() {
 
     try {
       const { data } = await axios.get(
-        `${url}/rackProdByTtba/${formatScanned}`
+        `${url}/rackProdByTtba/${formatScanned}`, {headers: {authentication: sessionStorage.getItem("access_token")}}
       );
       if (data.length === 0) {
         toast.error("Rack Not Found");
@@ -98,7 +98,7 @@ export default function WithdrawSampling() {
 
         await axios.patch(
           `${url}/decRackQty/${loc}/${rak}/${row}/${col}/${formatScanned}`,
-          body
+          body, {headers: {authentication: sessionStorage.getItem("access_token")}}
         );
 
         Swal.fire({

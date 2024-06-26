@@ -44,7 +44,7 @@ export default function InsertTimbang() {
     });
     try {
       const { data } = await axios.get(
-        `${url}/productsByTtbaAndStockPosition/${ttba}/${seqId}/${vat}`
+        `${url}/productsByTtbaAndStockPosition/${ttba}/${seqId}/${vat}`, {headers: {authentication: sessionStorage.getItem("access_token")} }
       );
       if (data.length === 0) {
         toast.error("Product Not Found");
@@ -115,7 +115,7 @@ export default function InsertTimbang() {
     e.preventDefault();
     try {
       //validation harusnta
-      await axios.post(`${url}/stockPosToRack/${scannedRack}/${encodeSpecialCharacters(scanned)}`, product);
+      await axios.post(`${url}/stockPosToRack/${scannedRack}/${encodeSpecialCharacters(scanned)}`, product, {headers: {authentication: sessionStorage.getItem("access_token")}});
 
       Swal.fire({
         title: 'Berhasil Menambahkan!',

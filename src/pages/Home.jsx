@@ -5,7 +5,8 @@ import Swal from "sweetalert2";
 import { UserContext } from "../context/UserContext";
 
 export default function Home() {
-  const { user } = useContext(UserContext);
+  const { user } = useContext(UserContext)
+  // console.log(user.user);
 
   const buttonData = [
     {

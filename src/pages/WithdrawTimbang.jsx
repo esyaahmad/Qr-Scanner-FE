@@ -13,14 +13,14 @@ export default function ScannerWithdraw() {
 
   const [openQr, setOpenQr] = useState(true);
   const [openQrRack, setOpenQrRack] = useState(false);
-  // const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false); 
 
   const [scanned, setScanned] = useState(undefined);
 
   const [product, setProduct] = useState([]);
   const [rack, setRack] = useState([]);
 
-  // const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
+  // const url = "https://npqfnjnh-3000.asse.devtunnels.ms"; 
   const url = "http://localhost:3000";
 
   const navigate = useNavigate();
@@ -37,7 +37,7 @@ export default function ScannerWithdraw() {
     });
     try {
       const { data } = await axios.get(
-        `${url}/productsPerVat/${ttba}/${seqId}/${vat}`
+        `${url}/productsPerVat/${ttba}/${seqId}/${vat}`, {headers: {authentication: sessionStorage.getItem("access_token")}}
       );
       if (data.length === 0) {
         toast.error("Product Not Found");
@@ -144,7 +144,7 @@ export default function ScannerWithdraw() {
 
       await axios.post(
         `${url}/stockPosition/${formatNoAnalisa}/${product[0]?.ttba_vatno}`,
-        body
+        body, {headers: {authentication: sessionStorage.getItem("access_token")}}
       );
 
       //   Swal.fire({
@@ -178,7 +178,7 @@ export default function ScannerWithdraw() {
         scanned,
       };
 
-      await axios.post(`${url}/rakDelByTtba/${formatScanned}`, body);
+      await axios.post(`${url}/rakDelByTtba/${formatScanned}`, body, {headers: {authentication: sessionStorage.getItem("access_token")}});
 
       //   Swal.fire({
       //     title: `Success Added`,
