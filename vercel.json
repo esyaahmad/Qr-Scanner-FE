@@ -1,8 +1,8 @@
 {
     "rewrites": [
         {
-            "source": "/ePemetaanBarang",
-            "destination": "/index.html"
+            "source": "/(.*)",
+            "destination": "/ePemetaanBarang/index.html"
         }
     ]
 }
