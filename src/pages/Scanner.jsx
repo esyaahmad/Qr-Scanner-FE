@@ -1,17 +1,19 @@
 import QrScanner from "../components/QrScanner";
 import QrScannerRack from "../components/QrScannerRack";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { UserContext } from "../context/UserContext";
 
 //handleupdate udah bener, tinggal create
 export default function Scanner() {
+  const {setLoading} = useContext(UserContext);
   const [openQr, setOpenQr] = useState(true);
   const [openQrRack, setOpenQrRack] = useState(false);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
 
   const [scanned, setScanned] = useState(undefined);
   const [scannedRack, setScannedRack] = useState(undefined);
@@ -23,8 +25,8 @@ export default function Scanner() {
   const [newQty, setNewQty] = useState(0);
   const [maxQty, setMaxQty] = useState(0);
 
-  const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
-  // const url = "http://localhost:3000";
+  // const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
+  const url = "http://localhost:3000";
 
   const navigate = useNavigate();
 
@@ -54,7 +56,7 @@ export default function Scanner() {
         toast.error("Product Not Found");
       } else {
         setProduct(data);
-        toast.success("Product data fetched successfully");
+        // toast.success("Product data fetched successfully");
       }
       // console.log(product);
     } catch (error) {
@@ -79,7 +81,7 @@ export default function Scanner() {
     // });
     try {
       const {data} = await axios.get(`${url}/detailProd/${ttba}/${seqId}`);
-      console.log(data, "ini data fetchProductDetail");
+      // console.log(data, "ini data fetchProductDetail");
       
         setProductDetail(data);
         // toast.success("Product data fetched successfully");
@@ -227,6 +229,8 @@ export default function Scanner() {
   const handleCreate = async (e) => {
     setLoading(true);
     e.preventDefault();
+    const formatItemId = product[0]?.ttba_itemid?.replace(/\s/g,"_");
+    const formatDNcNo = product[0]?.No_analisa?.replace(/\//g, "-");
     try {
       if (newQty <= 0) {
         throw new Error("Quantity must be greater than 0.");
@@ -251,16 +255,29 @@ export default function Scanner() {
       };
 
       const response = await axios.post(
-        `${url}/racks/${scannedRack}/${product[0]?.ttba_itemid?.replace(
-          /\s/g,
-          "_"
-        )}/${product[0]?.No_analisa?.replace(/\//g, "-")}`,
+        `${url}/racks/${scannedRack}/${formatItemId}/${formatDNcNo}`,
         body
       );
 
       Swal.fire({
-        title: `Success Updated ${newQty} Product to ${scannedRack}`,
-        icon: "success",
+        title: 'Berhasil Menambahkan!',
+        html: `
+          <div style="font-size: 1.1em; margin-top: 10px;">
+            <strong>TTBA:</strong> ${scanned}<br>
+            <strong>Quantity:</strong> ${newQty}<br>
+            <strong>Rack:</strong> ${scannedRack}
+          </div>
+        `,
+        icon: 'success',
+        iconColor: '#4caf50',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#4caf50',
+        background: '#f0f8ff',
+        customClass: {
+          title: 'swal-title',
+          htmlContainer: 'swal-html',
+          confirmButton: 'swal-button'
+        }
       });
       navigate("/");
 
@@ -359,7 +376,8 @@ export default function Scanner() {
     };
   }, [maxQty]);
 
-  // console.log(product, 'ini product');
+  console.log(productDetail, 'ini productDetail');
+  console.log(product, "ini product");
   console.log(newQty, "ini newQty");
   console.log(maxQty, "ini maxQty");
   // console.log(productName);
@@ -383,15 +401,10 @@ export default function Scanner() {
 
   return (
     <>
-      {loading && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 bg-opacity-50 backdrop-blur-lg">
-          <div className="bg-white p-5 rounded-lg shadow-lg">Loading...</div>
-        </div>
-      )}
-      <div className="mt-8 h-screen ">
+      <div className="mt-8 ">
         <div className="px-5 py-3">
           <div className="flex justify-between mt-2 mb-4">
-            <p className="text-2xl font-bold text-gray-800">Product Scanner</p>
+            <p className="text-2xl font-bold text-gray-800">Insert Product</p>
             <button
               className="btn btn-sm btn-neutral bg-[#4F6F52]"
               onClick={() => setOpenQr(!openQr)}
@@ -399,12 +412,12 @@ export default function Scanner() {
               {openQr ? "Close" : "Open"} Scan QR
             </button>
           </div>
-          <ToastContainer position="bottom-right" draggable />
+          {/* <ToastContainer position="bottom-right" draggable /> */}
           {openQr && <QrScanner setScanned={setScanned} />}
         </div>
         <div>
           {product.length > 0 ? (
-            <table className="table">
+            <table className="table table-xs">
               <tbody>
                 <tr>
                   <th>TTBA</th>
@@ -581,9 +594,9 @@ export default function Scanner() {
                     </svg>
                   </div>
                   <div>
-                    <p className="font-bold">Informasi Rak</p>
-                    <p className="text-sm">Tidak ada Product dalam Rack ini</p>
-                    <p className="font-bold">Sisa Quantity : {maxQty}</p>
+                    <p className="font-bold">Informasi Rak {scannedRack}</p>
+                    <p className="text-sm">Tidak terdapat TTBA produk pada rak ini</p>
+                    <p className="font-bold">Quantity yang dapat diinput : {maxQty}</p>
 
                   </div>
                 </div>

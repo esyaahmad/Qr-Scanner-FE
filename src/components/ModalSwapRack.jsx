@@ -1,9 +1,10 @@
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import QrScannerRackInto from "../components/QrScannerRackInto";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { UserContext } from "../context/UserContext";
 
 export default function ModalSwapRack({
   handleCloseModal,
@@ -18,11 +19,13 @@ export default function ModalSwapRack({
   // ttbaNo,
   ttbaScanned,
 }) {
+  const {loading, setLoading} = useContext(UserContext);
+
   const [scannedRackInto, setScannedRackInto] = useState(undefined);
   const [openQrRack, setOpenQrRack] = useState(true);
   const [rackInto, setRackInto] = useState([]);
   const [newQty, setNewQty] = useState(0);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [product, setProduct] = useState([]);
   // const [vatNo, setVatNo] = useState(undefined);
   console.log(scannedRackInto, "ini scannedRackInto");
@@ -45,8 +48,8 @@ export default function ModalSwapRack({
   // const ttbaNoRev = transformString(ttbaNo);
   // console.log(ttbaNoRev, "ini ttbaNoRev");
 
-  const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
-  // const url = "http://localhost:3000";
+  // const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
+  const url = "http://localhost:3000";
 
   //   console.log(`${url}/racks/${scannedRackInto}/${noAnalisaRev}/${itemIdRev}`);
 
@@ -167,7 +170,7 @@ export default function ModalSwapRack({
       );
 
       Swal.fire({
-        title: "Success, Product Moved!",
+        title: "Produk Berhasil Dipindahkan!",
         icon: "success",
       });
       setForceUpdate((prev) => !prev);
@@ -290,13 +293,13 @@ export default function ModalSwapRack({
             <label className="font-medium text-normal text-gray-900">
               Silahkan Scan Rak Tujuan
             </label>
-            {loading && (
+            {/* {loading && (
               <div className="absolute inset-0 z-50 flex items-center justify-center bg-gray-500 bg-opacity-50 backdrop-blur-lg">
                 <div className="bg-white p-5 rounded-lg shadow-lg">
                   Loading...
                 </div>
               </div>
-            )}
+            )} */}
 
             <div className="mb-2 flex justify-end items-center">
               <button
