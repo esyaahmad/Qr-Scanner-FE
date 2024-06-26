@@ -11,6 +11,8 @@ import { UserContext } from "../context/UserContext";
 //handleupdate udah bener, tinggal create
 export default function Scanner() {
   const {setLoading} = useContext(UserContext);
+  const { user } = useContext(UserContext)
+
   const [openQr, setOpenQr] = useState(true);
   const [openQrRack, setOpenQrRack] = useState(false);
   // const [loading, setLoading] = useState(false);
@@ -44,14 +46,17 @@ export default function Scanner() {
   //   )}/${product[0]?.No_analisa?.replace(/\//g, "-")}`
   // );
 
+  // let token = sessionStorage.getItem("access_token");
+  // console.log(token, "ini token");
+
   async function fetchProduct() {
     setLoading(true);
     const loadingToastId = toast.info("Fetching product data...", {
       autoClose: false,
     });
     try {
-      const { data } = await axios.get(`${url}/products/${ttba}/${seqId}/${vat}`);
-      console.log(data, "ini data fetchProduct");
+      const { data } = await axios.get(`${url}/products/${ttba}/${seqId}/${vat}`, {headers: {authentication: sessionStorage.getItem("access_token")}});
+      // console.log(data, "ini data fetchProduct");
       if (data.length === 0) {
         toast.error("Product Not Found");
       } else {
@@ -256,7 +261,7 @@ export default function Scanner() {
 
       const response = await axios.post(
         `${url}/racks/${scannedRack}/${formatItemId}/${formatDNcNo}`,
-        body
+        body, {headers: {authentication: sessionStorage.getItem("access_token")}}
       );
 
       Swal.fire({

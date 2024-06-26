@@ -6,7 +6,6 @@ import QrScannerRack from "../components/QrScannerRack";
 import axios from "axios";
 import ModalSwapRack from "../components/ModalSwapRack";
 import { UserContext } from "../context/UserContext";
-
 export default function ScannerRack() {
   const {setLoading} = useContext(UserContext);
 
@@ -22,6 +21,7 @@ export default function ScannerRack() {
   const [itemName, setItemName] = useState(undefined);
   const [scannedRackFirst, setScannedRackFirst] = useState(undefined);
   const [ttbaNo, setTtbaNo] = useState(undefined);
+  const [statusTtba, setStatusTtba] = useState(undefined);
 
   const [forceUpdate, setForceUpdate] = useState(false);
   const [searchTerm, setSearchTerm] = useState(""); 
@@ -37,7 +37,7 @@ export default function ScannerRack() {
       autoClose: false,
     });
     try {
-      const { data } = await axios.get(`${url}/racks/${scannedRack}`);
+      const { data } = await axios.get(`${url}/racks/${scannedRack}`, {headers: {authentication: sessionStorage.getItem("access_token")}});
       // if (data.length === 0) {
       //   throw new Error("Rack ini kosong");
       // }
@@ -87,6 +87,7 @@ export default function ScannerRack() {
   const filteredRack = rack.filter(item =>
     splitByHashTtba(item?.DNc_TTBANo).toLowerCase().includes(searchTerm.toLowerCase())
   );
+  console.log(filteredRack, "<<< FILTERED RACK");
   return (
     <>
       {isModalOpen && (
@@ -100,6 +101,7 @@ export default function ScannerRack() {
           scannedRackFirst={scannedRackFirst}
           setForceUpdate={setForceUpdate}
           ttbaScanned={ttbaNo}
+          status_ttba={statusTtba}
           // vatNo={vatNo}
           // vatQty={vatQty}
         />
@@ -186,6 +188,7 @@ export default function ScannerRack() {
                             setProcessDate(item.Process_Date);
                             setItemName(item.Item_Name);
                             setTtbaNo(item?.DNc_TTBANo);
+                            setStatusTtba(item?.Status);
                             // setVatNo(splitByHashVatNo(item?.DNc_TTBANo))
                             // setVatQty(splitByHashVatQty(item?.DNc_TTBANo))
                           }}

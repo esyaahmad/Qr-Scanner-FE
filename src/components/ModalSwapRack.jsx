@@ -18,8 +18,9 @@ export default function ModalSwapRack({
   setForceUpdate,
   // ttbaNo,
   ttbaScanned,
+  status_ttba,
 }) {
-  const {loading, setLoading} = useContext(UserContext);
+  const { loading, setLoading } = useContext(UserContext);
 
   const [scannedRackInto, setScannedRackInto] = useState(undefined);
   const [openQrRack, setOpenQrRack] = useState(true);
@@ -28,17 +29,18 @@ export default function ModalSwapRack({
   // const [loading, setLoading] = useState(false);
   const [product, setProduct] = useState([]);
   // const [vatNo, setVatNo] = useState(undefined);
-  console.log(scannedRackInto, "ini scannedRackInto");
-  console.log(ttbaScanned, "ini ttbaNo undefined");
-  console.log(itemId);
-  console.log(DNcNo, "ini no analisa");
-  console.log(processDate, "ini processDate");
-  console.log(itemName, "ini itemName");
-  console.log(qty, "ini qty");
-  console.log(scannedRackFirst, "ini scannedRackFirst");
+  // console.log(scannedRackInto, "ini scannedRackInto");
+  // console.log(ttbaScanned, "ini ttbaNo undefined");
+  // console.log(itemId);
+  // console.log(DNcNo, "ini no analisa");
+  // console.log(processDate, "ini processDate");
+  // console.log(itemName, "ini itemName");
+  // console.log(qty, "ini qty");
+  // console.log(scannedRackFirst, "ini scannedRackFirst");
+  console.log(status_ttba, "ini status_ttba");
   const noAnalisaRev = DNcNo.replace(/\//g, "%2f");
   const itemIdRev = itemId.replace(/\s/g, "_");
-  const ttbaOnly = (ttbaScanned.split("#")[0]).replace(/\//g, "%2f");
+  const ttbaOnly = ttbaScanned.split("#")[0].replace(/\//g, "%2f");
 
   // function transformString(inputString) {
   //   let result = inputString.replace(/\//g, '%2f');
@@ -70,7 +72,9 @@ export default function ModalSwapRack({
 
       //ini terbaru
       const { data } = await axios.get(
-        `${url}/racks/${scannedRackInto}/${encodeSpecialCharacters(ttbaScanned)}`
+        `${url}/racks/${scannedRackInto}/${encodeSpecialCharacters(
+          ttbaScanned
+        )}`
       );
 
       if (data) {
@@ -152,12 +156,13 @@ export default function ModalSwapRack({
         vat_no: splitByHashVatQty(ttbaScanned),
         vat_qty: product[0].TTBA_VATQTY,
         ttba_scanned: ttbaScanned,
+        status_ttba,
       };
-      
 
       await axios.post(
         `${url}/moveRack/${scannedRackInto}/${itemIdRev}/${noAnalisaRev}`,
-        body
+        body,
+        { headers: { authentication: sessionStorage.getItem("access_token") } }
       );
 
       // await axios.patch(
@@ -166,7 +171,11 @@ export default function ModalSwapRack({
       // );
 
       await axios.post(
-        `${url}/racksDel/${scannedRackFirst}/${itemIdRev}/${noAnalisaRev}/${encodeSpecialCharacters(ttbaScanned)}`, body
+        `${url}/racksDel/${scannedRackFirst}/${itemIdRev}/${noAnalisaRev}/${encodeSpecialCharacters(
+          ttbaScanned
+        )}`,
+        body,
+        { headers: { authentication: sessionStorage.getItem("access_token") } }
       );
 
       Swal.fire({

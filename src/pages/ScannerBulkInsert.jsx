@@ -38,7 +38,7 @@ export default function ScannerBulkInsert() {
     });
     try {
       const { data } = await axios.get(
-        `${url}/productsPerTtba/${ttba}/${seqId}/${vat}`
+        `${url}/productsPerTtba/${ttba}/${seqId}/${vat}`, { headers: { authentication: sessionStorage.getItem("access_token") } }
       );
       console.log(data, "ini data fetchProduct");
       if (data.length === 0) {
@@ -251,7 +251,7 @@ export default function ScannerBulkInsert() {
       const productToInsert = product.filter(
         (p) => p.ttba_vatno >= startVatNo && p.ttba_vatno <= endVatNo
       ); // Filter the product array based on the specified range
-      await axios.post(`${url}/racks/${scannedRack}`, productToInsert);
+      await axios.post(`${url}/racks/${scannedRack}`, productToInsert, { headers: { authentication: sessionStorage.getItem("access_token") } });
 
       Swal.fire({
         title: `Success Added`,

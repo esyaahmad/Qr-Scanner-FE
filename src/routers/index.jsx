@@ -9,11 +9,12 @@ import ScannerBulkInsert from "../pages/ScannerBulkInsert";
 import NotFoundPage from "../pages/NotFoundPage";
 import NotAuthorizedPage from "../pages/NotAuthorizedPage";
 import { AUTH_URL, NAMA_PROGRAM } from "../config/config";
-import ScannerWithdraw from "../pages/WithdrawProduct";
 import InsertTimbang from "../pages/InsertTimbang";
 import WithdrawSampling from "../pages/WithdrawSampling";
+import WithdrawTimbang from "../pages/WithdrawTimbang";
+
 import StockGudang from "../pages/StockGudang";
-import StockGudang2 from "../pages/StockGudang2";
+import TimbangPage from "../pages/TimbangPage";
 
 const validateUser = async (access_token) => {
   try {
@@ -102,7 +103,7 @@ const router = createBrowserRouter(
             },
             {
               path: "/withdraw-product",
-              element: <ScannerWithdraw />,
+              element: <WithdrawTimbang />,
             },
             {
               path: "/insert-timbang",
@@ -117,8 +118,8 @@ const router = createBrowserRouter(
               element: <StockGudang />,
             },
             {
-              path: "/stock-gudang2",
-              element: <StockGudang2 />,
+              path: "/timbang-page",
+              element: <TimbangPage />,
             },
           ],
           loader: async () => {
