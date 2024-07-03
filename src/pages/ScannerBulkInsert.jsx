@@ -9,6 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { UserContext } from "../context/UserContext";
 
 //handleupdate udah bener, tinggal create
+//insert bulk item (transaction ok), qty_lessnya blm ok
 export default function ScannerBulkInsert() {
   const {setLoading} = useContext(UserContext);
   const [openQr, setOpenQr] = useState(true);
@@ -112,11 +113,11 @@ export default function ScannerBulkInsert() {
       console.log(data, "ini data fetchCekRack");
     } catch (error) {
       console.log(error);
-      // toast.error(error?.response?.data?.error || "Rak Kosong");
-      // setScannedRack(undefined);
+      // toast.error(error?.response?.data?.error || "Rak Kosong"); 
+      // setScannedRack(undefined); 
       setRack([]);
     } finally {
-      // toast.dismiss(loadingToastId);
+      // toast.dismiss(loadingToastId); 
       setLoading(false);
     }
   }
@@ -304,10 +305,10 @@ export default function ScannerBulkInsert() {
     }
   }, [scannedRack]);
 
-  console.log(product, "ini product");
-  console.log(cekRack, "ini cekRack");
+  // console.log(product, "ini product");
+  // console.log(cekRack, "ini cekRack");
 
-  console.log(rack, "ini rack");
+  // console.log(rack, "ini rack");
 
   return (
     <>

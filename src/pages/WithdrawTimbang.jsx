@@ -8,20 +8,23 @@ import "react-toastify/dist/ReactToastify.css";
 import { UserContext } from "../context/UserContext";
 
 //handleupdate udah bener, tinggal create
+//ambil item dari gudang utama ke stok kecil (trasaction ok), qty_less blm ok
 export default function ScannerWithdraw() {
   const { setLoading } = useContext(UserContext);
 
   const [openQr, setOpenQr] = useState(true);
   const [openQrRack, setOpenQrRack] = useState(false);
-  // const [loading, setLoading] = useState(false); 
+  // const [loading, setLoading] = useState(false);
 
   const [scanned, setScanned] = useState(undefined);
 
   const [product, setProduct] = useState([]);
   const [rack, setRack] = useState([]);
 
-  // const url = "https://npqfnjnh-3000.asse.devtunnels.ms"; 
-  const url = "http://localhost:3000";
+  // const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
+  // const url = "http://localhost:3000";
+  const url = "http://192.168.1.24/api/ePemetaanGudang-dev";
+
 
   const navigate = useNavigate();
 
@@ -37,13 +40,14 @@ export default function ScannerWithdraw() {
     });
     try {
       const { data } = await axios.get(
-        `${url}/productsPerVat/${ttba}/${seqId}/${vat}`, {headers: {authentication: sessionStorage.getItem("access_token")}}
+        `${url}/productsPerVat/${ttba}/${seqId}/${vat}`,
+        { headers: { authentication: sessionStorage.getItem("access_token") } }
       );
       if (data.length === 0) {
         toast.error("Product Not Found");
       } else {
         setProduct(data);
-        toast.success("Product data fetched successfully");
+        // toast.success("Product data fetched successfully");
       }
       // console.log(product);
     } catch (error) {
@@ -63,11 +67,12 @@ export default function ScannerWithdraw() {
   }
 
   async function fetchRack() {
-    const formatScanned = scanned?.replace(/#/g, "%23").replace(/\//g, "%2F");
+    const formatScanned = scanned?.replace(/#/g, "$").replace(/\//g, "-");
     setLoading(true);
     try {
       const { data } = await axios.get(
-        `${url}/rackProdByTtba/${formatScanned}`
+        `${url}/rackProdByTtba/${formatScanned}`,
+        { headers: { authentication: sessionStorage.getItem("access_token") } }
       );
       if (data.length === 0) {
         toast.error("Rack Not Found");
@@ -96,43 +101,41 @@ export default function ScannerWithdraw() {
       if (rack[0]?.Status === "Karantina") {
         throw new Error("Produk Status Karantina");
       }
-    Swal.fire({
-      title: "Tarik Produk?",
-      html: `
+      Swal.fire({
+        title: "Tarik Produk?",
+        html: `
           <div style="font-size: 1.1em; margin-top: 10px;">
             <strong>TTBA:</strong> ${scanned}<br>
             <strong>Quantity:</strong> ${product[0]?.TTBA_qty_per_Vat}<br>
             <strong>Rack:</strong> ${rack[0]?.Lokasi}/${rack[0]?.Rak}/${rack[0]?.Baris}/${rack[0]?.Kolom}<br>
           </div>
         `,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, proceed!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Your code to execute when the user confirms
-        handleCreateStockPosition(e);
-        handleDeleteProduct(e);
-        navigate("/");
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, proceed!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Your code to execute when the user confirms
+          handleCreateStockPosition(e);
+          // handleDeleteProduct(e);
+          navigate("/");
 
-        Swal.fire("Success!", "Product has been withdrawn.", "success");
-      }
-    });
-       
-  } catch (error) {
-    console.log(error);
-    Swal.fire({
-      title: error.message,
-      icon: "error",
-    });
-
-  }
+          Swal.fire("Success!", "Product has been withdrawn.", "success");
+        }
+      });
+    } catch (error) {
+      console.log(error);
+      Swal.fire({
+        title: error.message,
+        icon: "error",
+      });
+    }
   };
 
   const handleCreateStockPosition = async (e) => {
-    const formatNoAnalisa = product[0]?.No_analisa.replace(/\//g, "%2F");
+    const formatNoAnalisa = product[0]?.No_analisa.replace(/\//g, "-");
     setLoading(true);
     e.preventDefault();
     try {
@@ -144,7 +147,8 @@ export default function ScannerWithdraw() {
 
       await axios.post(
         `${url}/stockPosition/${formatNoAnalisa}/${product[0]?.ttba_vatno}`,
-        body, {headers: {authentication: sessionStorage.getItem("access_token")}}
+        body,
+        { headers: { authentication: sessionStorage.getItem("access_token") } }
       );
 
       //   Swal.fire({
@@ -166,39 +170,39 @@ export default function ScannerWithdraw() {
     }
   };
 
-  const handleDeleteProduct = async (e) => {
-    const formatScanned = scanned?.replace(/#/g, "%23").replace(/\//g, "%2F");
+  // const handleDeleteProduct = async (e) => {
+  //   const formatScanned = scanned?.replace(/#/g, "%23").replace(/\//g, "%2F");
 
-    setLoading(true);
-    e.preventDefault();
-    try {
-      const body = {
-        product: product[0],
-        rack: rack[0],
-        scanned,
-      };
+  //   setLoading(true);
+  //   e.preventDefault();
+  //   try {
+  //     const body = {
+  //       product: product[0],
+  //       rack: rack[0],
+  //       scanned,
+  //     };
 
-      await axios.post(`${url}/rakDelByTtba/${formatScanned}`, body, {headers: {authentication: sessionStorage.getItem("access_token")}});
+  //     await axios.post(`${url}/rakDelByTtba/${formatScanned}`, body, {headers: {authentication: sessionStorage.getItem("access_token")}});
 
-      //   Swal.fire({
-      //     title: `Success Added`,
-      //     icon: "success",
-      //   });
-      //   navigate("/");
-    } catch (error) {
-      console.error("Error adding product to rack:", error);
+  //     //   Swal.fire({
+  //     //     title: `Success Added`,
+  //     //     icon: "success",
+  //     //   });
+  //     //   navigate("/");
+  //   } catch (error) {
+  //     console.error("Error adding product to rack:", error);
 
-      Swal.fire({
-        title: error?.response?.data?.message,
-        icon: "error",
-      });
-      setRack([]);
-      setProduct([]);
-      setScanned(undefined);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     Swal.fire({
+  //       title: error?.response?.data?.message,
+  //       icon: "error",
+  //     });
+  //     setRack([]);
+  //     setProduct([]);
+  //     setScanned(undefined);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
     // console.log(scanned, "ini scanned");
@@ -306,7 +310,9 @@ export default function ScannerWithdraw() {
                         {rack[0]?.Status}
                       </td>
                     ) : (
-                      <td className="font-bold">{rack[0]?.Status}</td>
+                      <td className="font-bold text-green-600">
+                        {rack[0]?.Status}
+                      </td>
                     )}
                   </tr>
                 </tbody>

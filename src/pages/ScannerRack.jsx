@@ -27,7 +27,10 @@ export default function ScannerRack() {
   const [searchTerm, setSearchTerm] = useState(""); 
 
   // const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
-  const url = "http://localhost:3000";
+  // const url = "http://localhost:3000";
+  const url = "http://192.168.1.24/api/ePemetaanGudang-dev";
+
+  
 
   console.log(`${url}/racks/${scannedRack}`);
 
@@ -102,11 +105,11 @@ export default function ScannerRack() {
           setForceUpdate={setForceUpdate}
           ttbaScanned={ttbaNo}
           status_ttba={statusTtba}
-          // vatNo={vatNo}
-          // vatQty={vatQty}
+          // vatNo={vatNo} 
+          // vatQty={vatQty} sadaolkasjdokkfdgm
         />
       )}
-      <div className="mt-8 h-screen ">
+      <div className="mt-8 ">
         <div className="px-5 py-3">
           <div className="flex justify-between mt-2 mb-4">
             <p className="text-2xl font-bold text-gray-800">Move Product</p>

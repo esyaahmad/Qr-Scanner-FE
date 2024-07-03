@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { UserContext } from "../context/UserContext";
 
 //handleupdate udah bener, tinggal create
+//kurangin stok gudang utama diambil untuk sampling (transaction ok)
 export default function WithdrawSampling() {
   const { setLoading } = useContext(UserContext);
 
@@ -29,7 +30,7 @@ export default function WithdrawSampling() {
   const seqId = arrScanned?.[1];
   const vat = arrScanned?.[2];
 
-  const formatScanned = scanned?.replace(/#/g, "%23").replace(/\//g, "%2F");
+  const formatScanned = scanned?.replace(/#/g, "$").replace(/\//g, "-");
   const loc = product[0]?.Lokasi;
   const rak = product[0]?.Rak;
   const row = product[0]?.Baris;

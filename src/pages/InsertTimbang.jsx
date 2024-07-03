@@ -8,7 +8,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { UserContext } from "../context/UserContext";
 
-//handleupdate udah bener, tinggal create
+//stock kecil to gudang utama (transaction aman), status blm ada
 export default function InsertTimbang() {
   const { setLoading } = useContext(UserContext);
 
@@ -24,7 +24,9 @@ export default function InsertTimbang() {
   // const [newQty, setNewQty] = useState(0);
 
   // const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
-  const url = "http://localhost:3000";
+  // const url = "http://localhost:3000";
+  const url = "http://192.168.1.24/api/ePemetaanGudang-dev";
+
 
   const navigate = useNavigate();
 
@@ -34,7 +36,7 @@ export default function InsertTimbang() {
   const vat = arrScanned?.[2];
 
   function encodeSpecialCharacters(input) {
-    return input.replace(/\//g, "%2F").replace(/#/g, "%23");
+    return input.replace(/\//g, "-").replace(/#/g, "$");
   }
 
   async function fetchProduct() {
@@ -75,7 +77,7 @@ export default function InsertTimbang() {
     });
     try {
       const { data } = await axios.get(
-        `${url}/racks/${scannedRack}/${encodeSpecialCharacters(scanned)}`
+        `${url}/racks/${scannedRack}/${encodeSpecialCharacters(scanned)}`, {headers: {authentication: sessionStorage.getItem("access_token")}}
       );
 
       if (data.length !== 0) {
@@ -178,7 +180,7 @@ export default function InsertTimbang() {
 
   console.log(product, "ini product");
 
-  // console.log(rack, "ini rack");
+  console.log(rack, "ini rack");
 
   return (
     <>
