@@ -6,6 +6,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { UserContext } from "../context/UserContext";
 
+//pindah rak (transaction ok) qty_less blm ok
 export default function ModalSwapRack({
   handleCloseModal,
   // ttba,
@@ -38,9 +39,9 @@ export default function ModalSwapRack({
   // console.log(qty, "ini qty");
   // console.log(scannedRackFirst, "ini scannedRackFirst");
   console.log(status_ttba, "ini status_ttba");
-  const noAnalisaRev = DNcNo.replace(/\//g, "%2f");
+  const noAnalisaRev = DNcNo.replace(/\//g, "-");
   const itemIdRev = itemId.replace(/\s/g, "_");
-  const ttbaOnly = ttbaScanned.split("#")[0].replace(/\//g, "%2f");
+  const ttbaOnly = ttbaScanned.split("#")[0].replace(/\//g, "-");
 
   // function transformString(inputString) {
   //   let result = inputString.replace(/\//g, '%2f');
@@ -51,12 +52,14 @@ export default function ModalSwapRack({
   // console.log(ttbaNoRev, "ini ttbaNoRev");
 
   // const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
-  const url = "http://localhost:3000";
+  // const url = "http://localhost:3000";
+  const url = "http://192.168.1.24/api/ePemetaanGudang-dev";
+
 
   //   console.log(`${url}/racks/${scannedRackInto}/${noAnalisaRev}/${itemIdRev}`);
 
   function encodeSpecialCharacters(input) {
-    return input.replace(/\//g, "%2F").replace(/#/g, "%23");
+    return input.replace(/\//g, "-").replace(/#/g, "$");
   }
 
   async function fetchRackInto() {
@@ -156,24 +159,12 @@ export default function ModalSwapRack({
         vat_no: splitByHashVatQty(ttbaScanned),
         vat_qty: product[0].TTBA_VATQTY,
         ttba_scanned: ttbaScanned,
+        scannedRackFirst,
         status_ttba,
       };
 
       await axios.post(
         `${url}/moveRack/${scannedRackInto}/${itemIdRev}/${noAnalisaRev}`,
-        body,
-        { headers: { authentication: sessionStorage.getItem("access_token") } }
-      );
-
-      // await axios.patch(
-      //   `${url}/racks/${scannedRackFirst}/${itemIdRev}/${noAnalisaRev}/dec`,
-      //   { newQty }
-      // );
-
-      await axios.post(
-        `${url}/racksDel/${scannedRackFirst}/${itemIdRev}/${noAnalisaRev}/${encodeSpecialCharacters(
-          ttbaScanned
-        )}`,
         body,
         { headers: { authentication: sessionStorage.getItem("access_token") } }
       );
@@ -256,6 +247,7 @@ export default function ModalSwapRack({
       handleUpdate(e);
     }
   };
+
   function getLastSegmentAfterHash(inputString) {
     let parts = inputString.split("#");
     return Number(parts[parts.length - 1]);
@@ -271,7 +263,7 @@ export default function ModalSwapRack({
     }
   }, [scannedRackInto]);
   //   console.log(rackInto);
-  // console.log(product, "ini product");
+  // console.log(product, "ini product"); ds
 
   function splitByHashTtba(inputString) {
     // Split the input string using '#' as the delimiter and return the first part

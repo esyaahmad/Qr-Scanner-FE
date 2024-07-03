@@ -9,6 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { UserContext } from "../context/UserContext";
 
 //handleupdate udah bener, tinggal create
+//insert item ke rack 1/1 (transaction ok)
 export default function Scanner() {
   const {setLoading} = useContext(UserContext);
   const { user } = useContext(UserContext)
@@ -27,7 +28,7 @@ export default function Scanner() {
   const [newQty, setNewQty] = useState(0);
   const [maxQty, setMaxQty] = useState(0);
 
-  // const url = "https://npqfnjnh-3000.asse.devtunnels.ms";
+  // const url = "https://qc8tdx1x-3000.asse.devtunnels.ms" || "http://localhost:3000"
   const url = "http://localhost:3000";
 
   const navigate = useNavigate();
@@ -381,8 +382,9 @@ export default function Scanner() {
     };
   }, [maxQty]);
 
-  console.log(productDetail, 'ini productDetail');
-  console.log(product, "ini product");
+  // console.log(productDetail, 'ini productDetail');
+  // console.log(product, "ini product");
+  // console.log(rack, "ini rack");
   console.log(newQty, "ini newQty");
   console.log(maxQty, "ini maxQty");
   // console.log(productName);
