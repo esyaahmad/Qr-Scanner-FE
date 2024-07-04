@@ -12,12 +12,34 @@
     ],
     "routes": [
       {
-        "src": "/ePemetaanBarang-dev/(.*)",  
-        "dest": "/ePemetaanBarang-dev/index.html"  
+        "src": "/ePemetaanBarang-dev/_next/static/(.*)",
+        "dest": "/ePemetaanBarang-dev/_next/static/$1"
       },
       {
-        "src": "/(.*)",  
-        "dest": "/index.html" 
+        "src": "/ePemetaanBarang-dev/(.*).js",
+        "headers": {
+          "Content-Type": "application/javascript"
+        },
+        "dest": "/ePemetaanBarang-dev/$1.js"
+      },
+      {
+        "src": "/ePemetaanBarang-dev/(.*)",
+        "dest": "/ePemetaanBarang-dev/index.html"
+      },
+      {
+        "src": "/_next/static/(.*)",
+        "dest": "/_next/static/$1"
+      },
+      {
+        "src": "/(.*).js",
+        "headers": {
+          "Content-Type": "application/javascript"
+        },
+        "dest": "/$1.js"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/index.html"
       }
     ]
   }
