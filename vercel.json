@@ -12,8 +12,8 @@
     ],
     "routes": [
       {
-        "src": "/${NAMA_PROGRAM}/(.*)",
-        "dest": "/${NAMA_PROGRAM}/index.html"
+        "src": "/ePemetaanBarang/(.*)",
+        "dest": "/ePemetaanBarang/index.html"
       }
     ]
   }
