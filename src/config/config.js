@@ -1,5 +1,5 @@
 // app name
-export const NAMA_PROGRAM = "ePemetaanBarang";
+export const NAMA_PROGRAM = "ePemetaanBarang-dev";
 
 // BE: LMS SERVER
 // prod
