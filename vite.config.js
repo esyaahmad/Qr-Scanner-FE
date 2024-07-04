@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { NAMA_PROGRAM } from "../config/config";
+// import { NAMA_PROGRAM } from "../config/config";
 
-const basename = `/${NAMA_PROGRAM}` || '/ePemetaanBarang';
+const basename = '/ePemetaanBarang';
 
 
 // https://vitejs.dev/config/
