@@ -12,8 +12,12 @@
     ],
     "routes": [
       {
-        "src": "/ePemetaanBarang/(.*)",
-        "dest": "/ePemetaanBarang/index.html"
+        "src": "/ePemetaanBarang/(.*)",  
+        "dest": "/ePemetaanBarang/index.html"  
+      },
+      {
+        "src": "/(.*)",  
+        "dest": "/index.html" 
       }
     ]
   }

@@ -88,6 +88,10 @@ const router = createBrowserRouter(
           element: <Home />,
         },
         {
+          path: "/ePemetaanBarang",
+          element: <Home />,
+        },
+        {
           children: [
             {
               path: "/insert-product",
