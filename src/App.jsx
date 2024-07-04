@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { RouterProvider } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { AUTH_URL, NAMA_PROGRAM } from "./config/config";
+import { AUTH_URL,  } from "./config/config";
 import { UserContext } from "./context/UserContext";
 import router from "./routers/index";
 import PreLoader from "./components/Widgets/PreLoader";
