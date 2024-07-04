@@ -3,7 +3,7 @@
     "public": true,
     "builds": [
       {
-        "src": "src/main.jsx",
+        "src": "package.json",
         "use": "@vercel/static-build",
         "config": {
           "distDir": "dist"
