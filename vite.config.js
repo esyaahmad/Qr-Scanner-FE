@@ -7,6 +7,5 @@ const basename = '/ePemetaanBarang-dev';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
-  base: basename
+  plugins: [react()]
 })
